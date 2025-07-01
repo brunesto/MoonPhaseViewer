@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Phase Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a1e; /* Deep space blue */
+            margin: 0;
+            padding: 0;
+        }
+        .moon-viewer-container {
+            width: 100vw; /* Take full viewport width */
+            height: 100vh; /* Take full viewport height */
+            position: relative;
+            overflow: hidden; /* Crucial to contain the moon */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* This new wrapper creates a responsive square for the moon simulation */
+        .moon-wrapper {
+            position: relative;
+            width: min(100vw, 100vh);
+            height: min(100vw, 100vh);
+            user-select: none; /* Prevent text selection while dragging */
+        }
+        /* Add grab/grabbing cursor when pannable */
+        .moon-wrapper.pannable {
+            cursor: grab;
+        }
+        .moon-wrapper.pannable:active {
+            cursor: grabbing;
+        }
+        .moon-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-image: url('https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001982/GSFC_20171208_Archive_e001982~orig.jpg');
+            background-size: cover;
+            background-position: center center;
+            border-radius: 50%; /* Ensure the moon texture is a circle */
+        }
+        .terminator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111827;
+            opacity: 0.9;
+            border-radius: 50%; /* This now correctly creates a circle because its parent is a square */
+        }
+        .labels-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Labels should not interfere with dragging */
+            z-index: 2;
+        }
+        .feature-label {
+            position: absolute;
+            color: white;
+            font-size: 10px; /* Made font slightly smaller to reduce clutter */
+            text-shadow: 0 0 5px black;
+            white-space: nowrap;
+            transform: translate(-50%, -50%); /* Center the label on its coordinates */
+            display: none; /* Hidden by default */
+        }
+        .controls-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1; /* Ensure controls are on top */
+            padding: 1.5rem;
+            background: linear-gradient(to bottom, rgba(12, 10, 30, 0.85) 0%, rgba(12, 10, 30, 0) 100%);
+            pointer-events: none;
+        }
+        /* Only enable pointer events on the actual interactive controls */
+        .controls-overlay button,
+        .controls-overlay input,
+        .controls-overlay label {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div id="moon-viewer-container" class="moon-viewer-container">
+        <!-- Responsive square wrapper for the moon simulation -->
+        <div id="moon-wrapper" class="moon-wrapper">
+            <!-- Moon background element -->
+            <div id="moon" class="moon-background"></div>
+            <!-- Terminator (shadow) element -->
+            <div id="terminator" class="terminator"></div>
+            <!-- Container for feature labels -->
+            <div id="labels-container" class="labels-container"></div>
+        </div>
+
+        <!-- Controls overlay -->
+        <div class="controls-overlay">
+            <div class="text-center space-y-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-100">Moon Phase Viewer</h1>
+                
+                <!-- Date input -->
+                <div>
+                    <label for="date-picker" class="sr-only">Select a Date</label>
+                    <input type="date" id="date-picker" class="w-full max-w-xs mx-auto px-4 py-2 bg-gray-900/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <!-- Pan and Zoom Controls -->
+                <div class="flex justify-center items-center space-x-2 md:space-x-4">
+                    <button id="pan-left" class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">←</button>
+                    <button id="pan-up" class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">↑</button>
+                    <button id="zoom-in" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">+</button>
+                    <button id="zoom-out" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">-</button>
+                    <button id="pan-down" class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">↓</button>
+                    <button id="pan-right" class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">→</button>
+                </div>
+
+                <!-- Flip and Rotation Controls -->
+                <div class="max-w-xs mx-auto space-y-2">
+                    <div class="flex justify-center items-center space-x-4 text-sm">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="flip-horizontal" class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
+                            <span>Flip Horizontal</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="flip-vertical" class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
+                            <span>Flip Vertical</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center space-x-2 text-sm">
+                        <label for="rotation-slider" class="whitespace-nowrap">Rotate:</label>
+                        <input type="range" id="rotation-slider" min="-180" max="180" value="0" class="w-full">
+                    </div>
+                </div>
+
+                <!-- Moon phase information -->
+                <div class="pt-2">
+                    <h2 id="phase-name" class="text-lg font-semibold text-indigo-400"></h2>
+                    <p id="illumination" class="text-gray-300 text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const moonViewerContainer = document.getElementById('moon-viewer-container');
+        const datePicker = document.getElementById('date-picker');
+        const moonWrapper = document.getElementById('moon-wrapper');
+        const moonElement = document.getElementById('moon');
+        const terminatorElement = document.getElementById('terminator');
+        const labelsContainer = document.getElementById('labels-container');
+        const phaseNameElement = document.getElementById('phase-name');
+        const illuminationElement = document.getElementById('illumination');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const panUpBtn = document.getElementById('pan-up');
+        const panDownBtn = document.getElementById('pan-down');
+        const panLeftBtn = document.getElementById('pan-left');
+        const panRightBtn = document.getElementById('pan-right');
+        const flipHorizontalCheckbox = document.getElementById('flip-horizontal');
+        const flipVerticalCheckbox = document.getElementById('flip-vertical');
+        const rotationSlider = document.getElementById('rotation-slider');
+
+        // --- LUNAR FEATURE DATA ---
+        const moonFeatures = [
+            { name: "Sea of Tranquility", x: 0.53, y: 0.15, z: 0.83 },
+            { name: "Sea of Serenity", x: 0.30, y: 0.47, z: 0.83 },
+            { name: "Sea of Crises", x: 0.83, y: 0.29, z: 0.47 },
+            { name: "Sea of Rains", x: -0.27, y: 0.64, z: 0.72 },
+            { name: "Ocean of Storms", x: -0.83, y: 0.26, z: 0.49 },
+            { name: "Sea of Nectar", x: 0.55, y: -0.26, z: 0.79 },
+            { name: "Sea of Clouds", x: -0.26, y: -0.37, z: 0.89 },
+            { name: "Sea of Moisture", x: -0.64, y: -0.35, z: 0.68 },
+            { name: "Tycho", x: -0.12, y: -0.69, z: 0.71 },
+            { name: "Copernicus", x: -0.35, y: 0.17, z: 0.92 },
+            { name: "Kepler", x: -0.63, y: 0.14, z: 0.76 },
+            { name: "Aristarchus", x: -0.74, y: 0.40, z: 0.54 },
+            { name: "Plato", x: -0.16, y: 0.85, z: 0.50 }
+        ];
+        let featureElements = [];
+
+        // Constants
+        const SYNODIC_MONTH = 29.530588853;
+        
+        // State
+        let moonAge = 0;
+        let currentZoom = 1;
+        const maxZoom = 4;
+        const minZoom = 1;
+        const zoomStep = 0.5;
+        let backgroundPosX = 50;
+        let backgroundPosY = 50;
+        const panStep = 5;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        let isFlippedHorizontal = false;
+        let isFlippedVertical = false;
+        let currentRotation = 0;
+
+        function getMoonAge(date) {
+            const knownNewMoon = new Date('2000-01-06T18:14:00Z');
+            const dateInUTC = new Date(date.valueOf() + date.getTimezoneOffset() * 60000);
+            const daysSinceKnownNewMoon = (dateInUTC - knownNewMoon) / (1000 * 60 * 60 * 24);
+            const cycles = daysSinceKnownNewMoon / SYNODIC_MONTH;
+            return cycles - Math.floor(cycles);
+        }
+
+        function getPhaseName(age) {
+            if (age < 0.03 || age > 0.97) return "New Moon";
+            if (age < 0.22) return "Waxing Crescent";
+            if (age < 0.28) return "First Quarter";
+            if (age < 0.47) return "Waxing Gibbous";
+            if (age < 0.53) return "Full Moon";
+            if (age < 0.72) return "Waning Gibbous";
+            if (age < 0.78) return "Last Quarter";
+            return "Waning Crescent";
+        }
+
+        function updateMoonPhase(date) {
+            moonAge = getMoonAge(date);
+            phaseNameElement.textContent = getPhaseName(moonAge);
+            const illumination = (1 - Math.cos(moonAge * 2 * Math.PI)) / 2;
+            illuminationElement.textContent = `Illumination: ${(illumination * 100).toFixed(1)}%`;
+
+            let rotation = 0;
+            let scaleX = 1;
+            if (moonAge <= 0.5) { // Waxing
+                rotation = 180;
+                scaleX = (moonAge * 2 - 1);
+            } else { // Waning
+                rotation = 0;
+                scaleX = (moonAge * 2 - 1);
+            }
+            terminatorElement.style.transform = `translateX(-50%) scaleX(${scaleX}) rotateY(${rotation}deg) translateX(50%)`;
+            updateLabelsVisibility();
+        }
+
+        function updateMoonTransform() {
+            let transformString = `rotateZ(${currentRotation}deg) scale(${currentZoom})`;
+            if (isFlippedHorizontal) transformString += ' rotateY(180deg)';
+            if (isFlippedVertical) transformString += ' rotateX(180deg)';
+            
+            moonWrapper.style.transform = transformString;
+            moonElement.style.backgroundPosition = `${backgroundPosX}% ${backgroundPosY}%`;
+            
+            if (currentZoom > minZoom) {
+                moonWrapper.classList.add('pannable');
+            } else {
+                moonWrapper.classList.remove('pannable');
+            }
+            updateLabelsVisibility();
+        }
+
+        function updateLabelsVisibility() {
+            if (!featureElements.length) return;
+
+            const sunAngle = (moonAge - 0.25) * 2 * Math.PI;
+            const sunVector = { x: Math.cos(sunAngle), y: 0, z: Math.sin(sunAngle) };
+
+            featureElements.forEach((label, index) => {
+                const feature = moonFeatures[index];
+                
+                const onNearSide = feature.z > 0;
+                const dotProduct = (sunVector.x * feature.x) + (sunVector.y * feature.y) + (sunVector.z * feature.z);
+                const isIlluminated = dotProduct > -0.1;
+
+                if (onNearSide && isIlluminated) {
+                    label.style.display = 'block';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+        }
+
+        datePicker.addEventListener('change', (event) => {
+            const selectedDate = new Date(event.target.value);
+            const userTimezoneOffset = selectedDate.getTimezoneOffset() * 60000;
+            const dateInUTC = new Date(selectedDate.getTime() + userTimezoneOffset);
+            updateMoonPhase(dateInUTC);
+        });
+
+        zoomInBtn.addEventListener('click', () => {
+            if (currentZoom < maxZoom) {
+                currentZoom += zoomStep;
+                updateMoonTransform();
+            }
+        });
+
+        zoomOutBtn.addEventListener('click', () => {
+            if (currentZoom > minZoom) {
+                currentZoom -= zoomStep;
+                if (currentZoom === minZoom) {
+                    backgroundPosX = 50;
+                    backgroundPosY = 50;
+                }
+                updateMoonTransform();
+            }
+        });
+        
+        function pan(screenDx, screenDy) {
+            let viewDx = screenDx;
+            let viewDy = screenDy;
+
+            if (isFlippedHorizontal) viewDx = -viewDx;
+            if (isFlippedVertical) viewDy = -viewDy;
+            
+            const angle = -currentRotation * Math.PI / 180;
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+
+            const moonDx = viewDx * cosA - viewDy * sinA;
+            const moonDy = viewDx * sinA + viewDy * cosA;
+
+            backgroundPosX += moonDx / currentZoom;
+            backgroundPosY += moonDy / currentZoom;
+
+            backgroundPosX = Math.max(0, Math.min(100, backgroundPosX));
+            backgroundPosY = Math.max(0, Math.min(100, backgroundPosY));
+
+            updateMoonTransform();
+        }
+
+        panUpBtn.addEventListener('click', () => pan(0, -panStep));
+        panDownBtn.addEventListener('click', () => pan(0, panStep));
+        panLeftBtn.addEventListener('click', () => pan(-panStep, 0));
+        panRightBtn.addEventListener('click', () => pan(panStep, 0));
+
+        flipHorizontalCheckbox.addEventListener('change', (e) => {
+            isFlippedHorizontal = e.target.checked;
+            updateMoonTransform();
+        });
+
+        flipVerticalCheckbox.addEventListener('change', (e) => {
+            isFlippedVertical = e.target.checked;
+            updateMoonTransform();
+        });
+
+        rotationSlider.addEventListener('input', (e) => {
+            currentRotation = parseFloat(e.target.value);
+            updateMoonTransform();
+        });
+
+        // --- Mouse and Touch Dragging Logic ---
+        function startDrag(clientX, clientY) {
+            isDragging = true;
+            lastMouseX = clientX;
+            lastMouseY = clientY;
+        }
+
+        function drag(clientX, clientY) {
+            if (!isDragging) return;
+            const dx = clientX - lastMouseX;
+            const dy = clientY - lastMouseY;
+            lastMouseX = clientX;
+            lastMouseY = clientY;
+            
+            const sensitivity = 0.5;
+            pan(dx * sensitivity, dy * sensitivity);
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        moonWrapper.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startDrag(e.clientX, e.clientY);
+        });
+        window.addEventListener('mousemove', (e) => drag(e.clientX, e.clientY));
+        window.addEventListener('mouseup', stopDrag);
+
+        moonWrapper.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging) drag(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        window.addEventListener('touchend', stopDrag);
+
+        // --- Mouse Wheel Zoom Logic ---
+        moonViewerContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                // Scroll up -> Zoom In
+                zoomInBtn.click();
+            } else {
+                // Scroll down -> Zoom Out
+                zoomOutBtn.click();
+            }
+        }, { passive: false });
+        
+        function init() {
+            // Create label elements
+            moonFeatures.forEach(feature => {
+                const label = document.createElement('div');
+                label.className = 'feature-label';
+                label.textContent = feature.name;
+                const left = (feature.x + 1) / 2 * 100;
+                const top = (-feature.y + 1) / 2 * 100;
+                label.style.left = `${left}%`;
+                label.style.top = `${top}%`;
+                labelsContainer.appendChild(label);
+                featureElements.push(label);
+            });
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            datePicker.value = `${year}-${month}-${day}`;
+            updateMoonPhase(today);
+            updateMoonTransform();
+        }
+
+        init();
+    </script>
+</body>
+</html>
