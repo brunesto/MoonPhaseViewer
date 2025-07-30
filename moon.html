@@ -7,7 +7,24 @@
     <title>Moon Phase Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
+   
+   
+    <script>
+
+        // how much of the background picture is taken by the moon
+        // const rX=0.88;
+        // const rY=0.87;
+
+        const rX=0.66;
+        const rY=0.66;
+
+        // what is the rotation of the moon in the picture
+        const dLat=+5;//-4;
+        const dLon=1;
+        </script>
+
+   
+   <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #000;
@@ -15,13 +32,14 @@
             margin: 0;
             padding: 0;
         }
+
         body.night {
-             /* filter defined inside HTML */
-         filter: url(#red-channel-filter);
-        
+            /* filter defined inside HTML */
+            filter: url(#red-channel-filter);
+
         }
 
-       
+
         /* Container that fills the screen and centers its content */
         .center-container {
             width: 100vw;
@@ -35,47 +53,49 @@
 
         .moon-background {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: min(100vw, 100vh);
-            height: min(100vw, 100vh);
+            xxtop: -2.8px;
+            xxleft: -1px;
+            top: -0px;
+            left: -0px;
+           
+            width: 100%;
+            height: 100%;
             background-color: #05060e;
-            /* Deep space blue */
-            background-image: url('GSFC_20171208_Archive_e001982~orig.jpg');
+
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/61/Moon_names.svg');
+            xxxbackground-image: url('GSFC_20171208_Archive_e001982~orig.jpg');
+            xxxbackground-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
+            xxbackground-image: url('circle-1080.png');
+            xxbackground-image: url('/home/bc2/Downloads/Beach_at_Fort_Lauderdale.jpg');
             background-size: cover;
             background-position: center center;
-            border-radius: 50%;
+            xxxborder-radius: 50%;
             /* Ensure the moon texture is a circle */
 
-            filter:  brightness(50%);
+            filter: brightness(50%);
+            rotate: 14deg;
 
-        
+
         }
 
-        body.night .moon-background{
-            filter:  brightness(50%);
+        body.night .moon-background {
+            filter: brightness(50%);
         }
 
 
-        .terminator {
-            width: min(100vw, 100vh);
-            height: min(100vw, 100vh);
-            opacity: 0.9;
-        }
-        .moon-labels {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: transparent;
-            width: min(100vw, 100vh);
-            height: min(100vw, 100vh);
-            pointer-events: none;
-            /* Labels should not interfere with dragging */
-
+        #terminator {
+            width: 100%;
+            height: 100%;
             opacity: 0.9;
         }
 
-        /* This new wrapper creates a responsive square for the moon simulation */
+        #moon-labels {
+            width: 100%;
+            height: 100%;
+            opacity: 0.9;
+        }
+
+        /* wraps moon, terminator and labels */
         .moon-wrapper {
             position: relative;
             top: 0;
@@ -111,39 +131,54 @@
 
 
         .feature-label {
+            transform-origin: 0% 0%;
             position: absolute;
             color: white;
             font-size: 1em;
             /* Made font slightly smaller to reduce clutter */
             text-shadow: 0 0 5px black;
             white-space: nowrap;
-            transform: translate(-50%, -50%);
+            transformXXX: translate(-50%, -50%);
             /* Center the label on its coordinates */
-
+            opacity: 0.5;
+            text-align: left;
+            
         }
 
+
+        .feature-label::before {
+          border-top:1px solid yellow;
+          border-left:1px solid yellow;
+  content: ' ';
+  width:1em;
+  height:1em;
+  display: inline-block;
+  margin-right: 1em;
+  font-size: 0.5em;
+  vertical-align: top;
+  color: #e74c3c;    /* Optional: give the arrow a color */
+}
         /* Target the calendar icon */
-            input[type="date"]::-webkit-calendar-picker-indicator {
+        input[type="date"]::-webkit-calendar-picker-indicator {
             /* This filter combo will turn the default black icon to a blue shade */
             /* You can generate new filter values using online tools */
             filter: invert(39%) sepia(93%) saturate(1420%) hue-rotate(196deg) brightness(98%) contrast(105%);
-            
+
             /* Make the icon clickable */
             cursor: pointer;
-            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-900 text-white" onload="init()">
     <svg width="0" height="0" style="position:absolute;">
         <filter id="red-channel-filter">
-          <feColorMatrix type="matrix" 
-            values="1 0 0 0 0
+            <feColorMatrix type="matrix" values="1 0 0 0 0
                     0 0 0 0 0
                     0 0 0 0 0
                     0 0 0 1 0" />
         </filter>
-      </svg>
+    </svg>
 
 
 
@@ -167,18 +202,18 @@
             <!-- Date input -->
             <div class="flex text-left items-center space-x-2 md:space-x-4">
                 <button id="date-prev"
-                class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">&lt;</button>
-        
+                    class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">&lt;</button>
+
                 <label for="date-picker" class="sr-only">Select a Date</label>
-            
+
                 <input type="date" id="date-picker"
                     class="max-w-xs mx-auto px-4 py-2 bg-gray-900/60 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-       
-                    <button id="date-next"
+
+                <button id="date-next"
                     class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">&gt;</button>
-            
-       
-                </div>
+
+
+            </div>
 
             <!-- Pan and Zoom Controls -->
             <div class="flex text-left items-center space-x-2 md:space-x-4">
@@ -210,16 +245,15 @@
                         <span>Flip Vertical</span>
                     </label>
                     <label class="flex  text-left space-x-2 cursor-pointer">
-                        <input type="checkbox" id="night-vision"
-                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500" 
-                            >
+                        <input type="checkbox" id="night-vision" checked="checked"
+                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
                         <span>Night vision</span>
                     </label>
                 </div>
                 <div class="flex  text-right space-x-2 text-sm">
                     <label for="rotation-slider" class="whitespace-nowrap">Rotation:</label>
                     <input type="range" id="rotation-slider" min="-90" max="90" value="0" class="w-[15em]">
-                    <span id="rotationLabel" > <span>
+                    <span id="rotationLabel"> <span>
                 </div>
             </div>
 
@@ -231,11 +265,15 @@
         </div>
     </div>
     </div>
-    <script>
-
-
-
-
+    <script src="craters_large.js"></script>
+    <script src="craters_medium.js"></script>
+    <script src="craters_small.js"></script>
+    <script src="craters_tiny.js"></script>
+    
+    
+    <script src="mares.js"></script>
+    
+            <script>
         // --- LUNAR FEATURE DATA ---
         // const moonFeatures = [
         //     { name: "Sea of Tranquility", x: 0.53, y: 0.15, z: 0.83 },
@@ -255,16 +293,16 @@
 
 
         let featureElements = [];
-        let features=[];
-
-      
+        let features = [];
 
 
+
+ 
         // DOM Elements
+        const datePrevBtn = document.getElementById('date-prev');
         const datePicker = document.getElementById('date-picker');
-        const datePrevButton = document.getElementById('date-picker');
-        const datePicker = document.getElementById('date-picker');
-        
+        const dateNextBtn = document.getElementById('date-next');
+
         const moonWrapper = document.getElementById('moon-wrapper');
         const moonElement = document.getElementById('moon');
         const terminatorElement = document.getElementById('terminator');
@@ -318,11 +356,14 @@
             // control buttons
 
             datePicker.addEventListener('change', (event) => {
-                const selectedDate = new Date(event.target.value);
+                const selectedDate = new Date(datePicker.value);
                 const userTimezoneOffset = selectedDate.getTimezoneOffset() * 60000;
                 const dateInUTC = new Date(selectedDate.getTime() + userTimezoneOffset);
                 updateMoonPhase(dateInUTC);
             });
+
+            datePrevBtn.addEventListener('click', () => dateShift(-1));
+            dateNextBtn.addEventListener('click', () => dateShift(1));
 
             // pan
             panUpBtn.addEventListener('click', () => pan(0, -panStep));
@@ -363,15 +404,15 @@
                 updateMoonTransform();
             });
             nightVisionCheckbox.addEventListener('change', (e) => {
-                parseNightVision();                
+                parseNightVision();
             });
-            
+
 
             // lattitude rotation slider
 
             rotationSlider.addEventListener('input', (e) => {
                 parseLatitude();
-                
+
             });
 
 
@@ -433,23 +474,38 @@
 
 
         }
-        function parseNightVision(){
+
+        function dateShift(days) {
+            const currentDate = new Date(datePicker.value);
+            currentDate.setDate(currentDate.getDate() + days);
+            datePicker.value = currentDate.toISOString().split('T')[0];
+            const userTimezoneOffset = currentDate.getTimezoneOffset() * 60000;
+            const dateInUTC = new Date(currentDate.getTime() + userTimezoneOffset);
+            updateMoonPhase(dateInUTC);
+
+        }
+        function parseNightVision() {
             if (nightVisionCheckbox.checked) {
                 document.body.classList.add('night');
             } else {
                 document.body.classList.remove('night');
-            }                
+            }
         }
 
-        function parseLatitude(){
+        function parseLatitude() {
             currentRotation = parseInt(rotationSlider.value);
-            rotationLabel.innerText=currentRotation+"°"
+            rotationLabel.innerText = currentRotation + "°"
             updateMoonTransform();
         }
 
 
 
         function init() {
+
+            const width=Math.min(window.innerWidth, window.innerHeight)-300;
+            moonWrapper.style.width =width+"px";
+            moonWrapper.style.height =width+"px";
+            
             addListeners();
             initFeatures();
 
@@ -461,7 +517,7 @@
             updateMoonPhase(today);
             parseNightVision();
             parseLatitude();
-           
+
         }
 
 
@@ -487,31 +543,14 @@
         function updateMoonPhase(date) {
             moonAge = getMoonAge(date);
             phaseNameElement.textContent = getPhaseName(moonAge);
-            // const illumination = (1 - Math.cos(moonAge * 2 * Math.PI)) / 2;
-            // illuminationElement.textContent = `Illumination: ${(illumination * 100).toFixed(1)}%`;
-
-            // let rotation = 0;
-            // let scaleX = 1;
-            // let transIn = -50;
-            // let transOut = 50;
-            // if (moonAge <= 0.5) { // Waxing
-            //     rotation = 180;
-            //     scaleX = (moonAge * 2 - 1);
-            // } else { // Waning
-            //     rotation = 0;
-            //     scaleX = (moonAge * 2 - 1);
-            //     transIn = -transIn;
-            //     transOut = -transOut;
-            // }
-            // terminatorElement.style.transform = `rotate(0deg) translateX(${transIn}%) scaleX(${scaleX})  rotateY(${rotation}deg) translateX(${transOut}%) `;
-
-            drawCircle(moonAge*360)
+            
+            drawCircle(moonAge * 360)
         }
 
 
 
-                            // Draw a circle on the image using JavaScript and Canvas API
-                            function drawCircle(angle) {
+        // Draw a circle on the image using JavaScript and Canvas API
+        function drawCircle(angle) {
 
             // const angleElement = document.getElementById('angle-value');
             // angleElement.textContent = angle;
@@ -521,23 +560,36 @@
             const imgElement = document.getElementById('moon');
             const canvasElement = document.getElementById('terminator');
 
-            const imgWidth = imgElement.offsetWidth;
-            const imgHeight = imgElement.offsetHeight;
+            var imgWidth = imgElement.offsetWidth;
+            var imgHeight = imgElement.offsetHeight;
 
+            var circleWidth = imgWidth*rX;
+            var circleHeight = imgHeight*rY;
 
             canvasElement.width = imgWidth;
             canvasElement.height = imgHeight;
 
             // Get the image dimensions
-          
+
             console.log(`w:${imgWidth}, h:${imgHeight}`);
 
 
-            const ctx = canvasElement.getContext('2d');
+            var ctx = canvasElement.getContext('2d');
+
+
+
+
             const center_x = imgWidth / 2;
             const center_y = imgHeight / 2;
 
 
+            const circle = new Path2D();
+           
+          
+            // ctx.strokeStyle = '#FFFFFF';
+            // circle.arc(center_x, center_y,imgWidth, 0, 2 * Math.PI);
+            // ctx.stroke(circle);
+            
             console.log(`center:${center_x}, ${center_y}`);
 
             ctx.fillStyle = '#000000bb';
@@ -547,7 +599,7 @@
             ctx.beginPath();
 
 
-            ctx.arc(center_x, center_y, imgWidth / 2, imgHeight / 2, 0, Math.PI * 2);
+            ctx.arc(center_x, center_y, circleWidth / 2, circleHeight / 2, 0, Math.PI * 2);
             ctx.clip();
 
             if (angle == 0) {
@@ -567,10 +619,10 @@
                     // just half moon
                 } else if (angle < 90) {
 
-                    ctx.ellipse(center_x, center_y, widthFactor * imgWidth / 2, imgHeight / 2,
+                    ctx.ellipse(center_x, center_y, widthFactor * circleWidth / 2, circleHeight / 2,
                         0, Math.PI * 0.5, -Math.PI * 0.5, true);
                 } else {
-                    ctx.ellipse(center_x, center_y, -widthFactor * imgWidth / 2, imgHeight / 2,
+                    ctx.ellipse(center_x, center_y, -widthFactor * circleWidth / 2, circleHeight / 2,
                         0, Math.PI * 0.5, -Math.PI * 0.5, false);
                 }
             } else {
@@ -583,11 +635,11 @@
                     // just half moon
                 } else if (angle < 270) {
 
-                    ctx.ellipse(center_x, center_y, -widthFactor * imgWidth / 2, imgHeight / 2,
-                        0,-Math.PI * 0.5, +Math.PI * 0.5, false);
+                    ctx.ellipse(center_x, center_y, -widthFactor * circleWidth / 2, circleHeight / 2,
+                        0, -Math.PI * 0.5, +Math.PI * 0.5, false);
 
                 } else {
-                    ctx.ellipse(center_x, center_y, widthFactor * imgWidth / 2, imgHeight / 2,
+                    ctx.ellipse(center_x, center_y, widthFactor * circleWidth / 2, circleHeight / 2,
                         0, -Math.PI * 0.5, Math.PI * 0.5, true);
                 }
 
@@ -597,11 +649,11 @@
 
 
             console.log('Circle drawn successfully');
-            }
+        }
 
 
         function pan(screenDx, screenDy) {
-            
+
 
 
             if (isFlippedHorizontal) screenDx = -screenDx;
@@ -631,7 +683,7 @@
 
 
             let transformString = ''
-            
+
             if (isFlippedHorizontal) transformString += ' rotateY(180deg)';
             if (isFlippedVertical) transformString += ' rotateX(180deg)';
 
@@ -645,12 +697,12 @@
 
 
             featureElements.forEach((label, index) => {
-                const feature =features[index];
-                if (currentZoom > 0.5) {
+                const feature = features[index];
+                if (currentZoom > feature.minZoom) {
                     let invZoom = 1 / currentZoom;
                     let transformString = ''
-                    
-                    transformString +=  `rotateZ(${-currentRotation}deg) scale(${invZoom})`
+
+                    transformString += `rotateZ(${-currentRotation}deg) scale(${invZoom})`
                     if (isFlippedHorizontal) transformString += ' rotateY(180deg)';
                     if (isFlippedVertical) transformString += ' rotateX(180deg)';
                     label.style.transform = transformString;
@@ -663,56 +715,68 @@
 
             });
         }
-        
 
 
-// features
 
-  // x=R⋅cos(ϕ)⋅sin(λ)y=R⋅sin(ϕ)
-  function latlon2xy(lat, lon) {
-            const R = 1; // Assuming unit sphere for simplicity
-            var latr = lat * Math.PI / 180; // Convert latitude to radians
-            var lonr = lon * Math.PI / 180; // Convert longitude to radians
-            var x = R * Math.cos(latr) * Math.sin(lonr);
-            var y = R * Math.sin(latr);
-            // if (latr<0)
-            //     y = -y; // Invert y for southern hemisphere to match the visual representation
+        // features
+
+        // x=cos(ϕ)⋅sin(λ)y=sin(ϕ)
+        function latlon2xy(lat, lon) {
+           
+            var latr = (lat+dLat) * Math.PI / 180; // Convert latitude to radians
+            var lonr = (lon+dLon) * Math.PI / 180; // Convert lon to radians
+            var x = Math.cos(latr) * Math.sin(lonr);
+            var y =  Math.sin(latr);
             return { x, y };
         }
 
 
         function coordsFeatures() {
-            for(var lat=-90; lat<=90; lat+=10){
-                for(var lon=-90; lon<90; lon+=10){
-                    
+            for (var lat = -90; lat <= 90; lat += 10) {
+                for (var lon = -90; lon <= 90; lon += 10) {
+
                     features.push({
-                        featureType:"debug",
-                        name: `${lat},${lon}`,
+                        featureType: "debug",
+                        minZoom:0.5,
+                        name: '',//`${lat},${lon}`,
                         lat: lat,
                         lon: lon,
                         diameter: 1
                     });
                 }
             }
-            
+
         }
 
+        const topFeatures=["Stevinus","Langrenus","Grimaldi","Tycho","Copernicus", "Kepler","Aristarchus", "Plato"];
+
+        function pushFeatures(set,featureType,minZoom) {
+            set.forEach(feature => {
+                    if (feature.name=="Grimaldi") {
+                        console.log("caguendeu");
+                    }
+                    if (Math.abs(feature.lon) <= 90){
+                        if (topFeatures.indexOf(feature.name)!=-1){
+                        feature.featureType =featureType;
+                        feature.minZoom=0.5;//minZoom;
+                        features.push(feature);
+                        }
+                    }
+
+                })
+        }
         function initFeatures() {
-            mares.forEach(mare => {
-                mare.featureType = 'mare';
-                if (Math.abs(mare.lon)<=90)
-                    features.push(mare);
-            });
-
-            craters.forEach(mare => {
-                mare.featureType = 'crater';
-                if (Math.abs(mare.lon)<=90)
-                    features.push(mare);
-            });
-
-            //coordsFeatures();
+           
+            // pushFeatures(mares,'mare',0.5);
             
+            pushFeatures(craters_tiny,'crater',5);
+            pushFeatures(craters_small,'crater',2.5);
+            pushFeatures(craters_medium,'crater',1);
+            pushFeatures(craters_large,'crater',0.5);
 
+//    coordsFeatures();
+
+         
 
             // Create label elements
             features.forEach(feature => {
@@ -720,10 +784,15 @@
                 label.className = 'feature-label';
                 label.textContent = feature.name;
 
-                let {x,y}=latlon2xy(feature.lat, feature.lon) 
+                let { x, y } = latlon2xy(feature.lat, feature.lon)
 
-                const left = (x +1)/2 * 100;
-                const top = (-y +1)/2 * 100;
+
+                
+                
+                
+
+                const left = 50+rX*x/2*100;
+                const top = 50-rY*y/2*100;
                 label.style.left = `${left}%`;
                 label.style.top = `${top}%`;
                 labelsContainer.appendChild(label);
@@ -732,618 +801,9 @@
         }
 
 
-  // features data      
+        // features data imported via js      
 
 
-
-        const mares=
-[
-  {
-    "name": "Mare Anguis",
-    "lat": 22.6,
-    "lon": 67.7,
-    "diameter": 150
-  },
-  {
-    "name": "Mare Australe",
-    "lat": -38.9,
-    "lon": 93.0,
-    "diameter": 603
-  },
-  {
-    "name": "Mare Cognitum",
-    "lat": -10.0,
-    "lon": -23.1,
-    "diameter": 376
-  },
-  {
-    "name": "Mare Crisium",
-    "lat": 17.0,
-    "lon": 59.1,
-    "diameter": 418
-  },
-  {
-    "name": "Mare Fecunditatis",
-    "lat": -7.8,
-    "lon": 51.3,
-    "diameter": 909
-  },
-  {
-    "name": "Mare Frigoris",
-    "lat": 56.0,
-    "lon": 1.4,
-    "diameter": 1596
-  },
-  {
-    "name": "Mare Humboldtianum",
-    "lat": 56.8,
-    "lon": 81.5,
-    "diameter": 273
-  },
-  {
-    "name": "Mare Humorum",
-    "lat": -24.4,
-    "lon": -38.6,
-    "diameter": 389
-  },
-  {
-    "name": "Mare Imbrium",
-    "lat": 32.8,
-    "lon": -15.6,
-    "diameter": 1123
-  },
-  {
-    "name": "Mare Ingenii",
-    "lat": -33.7,
-    "lon": 163.5,
-    "diameter": 318
-  },
-  {
-    "name": "Mare Insularum",
-    "lat": 7.5,
-    "lon": -30.9,
-    "diameter": 513
-  },
-  {
-    "name": "Mare Marginis",
-    "lat": 13.3,
-    "lon": 86.1,
-    "diameter": 420
-  },
-  {
-    "name": "Mare Moscoviense",
-    "lat": 27.3,
-    "lon": 147.9,
-    "diameter": 277
-  },
-  {
-    "name": "Mare Nectaris",
-    "lat": -15.2,
-    "lon": 35.5,
-    "diameter": 333
-  },
-  {
-    "name": "Mare Nubium",
-    "lat": -21.3,
-    "lon": -16.6,
-    "diameter": 715
-  },
-  {
-    "name": "Mare Orientale",
-    "lat": -19.4,
-    "lon": -92.8,
-    "diameter": 327
-  },
-  {
-    "name": "Mare Serenitatis",
-    "lat": 28.0,
-    "lon": 17.5,
-    "diameter": 707
-  },
-  {
-    "name": "Mare Smythii",
-    "lat": 1.3,
-    "lon": 87.5,
-    "diameter": 373
-  },
-  {
-    "name": "Mare Spumans",
-    "lat": 1.1,
-    "lon": 65.1,
-    "diameter": 139
-  },
-  {
-    "name": "Mare Tranquillitatis",
-    "lat": 8.5,
-    "lon": 31.4,
-    "diameter": 873
-  },
-  {
-    "name": "Mare Undarum",
-    "lat": 6.8,
-    "lon": 68.4,
-    "diameter": 243
-  },
-  {
-    "name": "Mare Vaporum",
-    "lat": 13.3,
-    "lon": 3.6,
-    "diameter": 245
-  },
-  {
-    "name": "Oceanus Procellarum",
-    "lat": 18.4,
-    "lon": -57.4,
-    "diameter": 2568
-  }
-]
-;
-
-
-const craters=[
-    {
-        "name": "Abbe",
-        "lat": -57.5,
-        "longitude": 174.7,
-        "diameter": 66
-    },
-    {
-        "name": "Abbot",
-        "lat": 5.6,
-        "longitude": 54.8,
-        "diameter": 10.3
-    },
-    {
-        "name": "Abel",
-        "lat": -34.6,
-        "longitude": 85.9,
-        "diameter": 122
-    },
-    {
-        "name": "Abenezra",
-        "lat": -21.2,
-        "longitude": 11.9,
-        "diameter": 42
-    },
-    {
-        "name": "Abul Wáfa",
-        "lat": 1.0,
-        "longitude": 116.6,
-        "diameter": 55
-    },
-    {
-        "name": "Abulfeda",
-        "lat": -13.9,
-        "longitude": 13.9,
-        "diameter": 65
-    },
-    {
-        "name": "Acosta",
-        "lat": -5.7,
-        "longitude": 58.7,
-        "diameter": 13
-    },
-    {
-        "name": "Adams",
-        "lat": -31.9,
-        "longitude": 68.4,
-        "diameter": 66
-    },
-    {
-        "name": "Agatharchides",
-        "lat": -20.0,
-        "longitude": -31.0,
-        "diameter": 48
-    },
-    {
-        "name": "Agricola",
-        "lat": 29.1,
-        "longitude": -54.2,
-        "diameter": 16
-    },
-    {
-        "name": "Agrippa",
-        "lat": 4.1,
-        "longitude": 10.5,
-        "diameter": 44
-    },
-    {
-        "name": "Airy",
-        "lat": -18.2,
-        "longitude": 5.6,
-        "diameter": 36
-    },
-    {
-        "name": "Aitken",
-        "lat": -16.5,
-        "longitude": 173.4,
-        "diameter": 135
-    },
-    {
-        "name": "Albategnius",
-        "lat": -11.2,
-        "longitude": 4.1,
-        "diameter": 131
-    },
-    {
-        "name": "Al-Biruni",
-        "lat": 18.2,
-        "longitude": 92.6,
-        "diameter": 77
-    },
-    {
-        "name": "Al-Bakri",
-        "lat": 14.4,
-        "longitude": 20.2,
-        "diameter": 12
-    },
-    {
-        "name": "Al-Khwarizmi",
-        "lat": 7.0,
-        "longitude": 107.4,
-        "diameter": 65
-    },
-    {
-        "name": "Almanon",
-        "lat": -16.9,
-        "longitude": 15.1,
-        "diameter": 49
-    },
-    {
-        "name": "Al-Marrakushi",
-        "lat": -10.4,
-        "longitude": 55.8,
-        "diameter": 8.2
-    },
-    {
-        "name": "Aloha",
-        "lat": 26.1,
-        "longitude": 30.5,
-        "diameter": 2.6
-    },
-    {
-        "name": "Alpetragius",
-        "lat": -16.0,
-        "longitude": -4.5,
-        "diameter": 39
-    },
-    {
-        "name": "Alphonsus",
-        "lat": -13.4,
-        "longitude": -2.8,
-        "diameter": 119
-    },
-    {
-        "name": "Alter",
-        "lat": 18.6,
-        "longitude": -107.4,
-        "diameter": 64
-    },
-    {
-        "name": "Amici",
-        "lat": -10.2,
-        "longitude": -172.1,
-        "diameter": 54
-    },
-    {
-        "name": "Ammonius",
-        "lat": -8.5,
-        "longitude": 1.5,
-        "diameter": 8.5
-    },
-    {
-        "name": "Amundsen",
-        "lat": -84.4,
-        "longitude": 82.8,
-        "diameter": 101
-    },
-    {
-        "name": "Anaxagoras",
-        "lat": 73.4,
-        "longitude": -10.1,
-        "diameter": 50
-    },
-    {
-        "name": "Anaximander",
-        "lat": 66.9,
-        "longitude": -51.3,
-        "diameter": 67
-    },
-    {
-        "name": "Anaximenes",
-        "lat": 72.5,
-        "longitude": -44.5,
-        "diameter": 80
-    },
-    {
-        "name": "Anděl",
-        "lat": -10.3,
-        "longitude": 11.2,
-        "diameter": 35
-    },
-    {
-        "name": "Anders",
-        "lat": -41.3,
-        "longitude": -143.0,
-        "diameter": 40
-    },
-    {
-        "name": "Anderson",
-        "lat": 15.6,
-        "longitude": 171.7,
-        "diameter": 109
-    },
-    {
-        "name": "Andersson",
-        "lat": -49.6,
-        "longitude": 82.5,
-        "diameter": 13
-    },
-    {
-        "name": "Andronov",
-        "lat": -23.7,
-        "longitude": -116.7,
-        "diameter": 17
-    },
-    {
-        "name": "Ango",
-        "lat": 20.5,
-        "longitude": 32.3,
-        "diameter": 0.9
-    },
-    {
-        "name": "Angström",
-        "lat": 29.9,
-        "longitude": -41.6,
-        "diameter": 9.6
-    },
-    {
-        "name": "Ann",
-        "lat": 25.1,
-        "longitude": 0.4,
-        "diameter": 3
-    },
-    {
-        "name": "Annegrit",
-        "lat": 29.4,
-        "longitude": 25.7,
-        "diameter": 1.4
-    },
-    {
-        "name": "Ansgarius",
-        "lat": -13.0,
-        "longitude": 79.9,
-        "diameter": 94
-    },
-    {
-        "name": "Antoniadi",
-        "lat": -69.7,
-        "longitude": -172.0,
-        "diameter": 143
-    },
-    {
-        "name": "Anuchin",
-        "lat": -48.4,
-        "longitude": 100.2,
-        "diameter": 57
-    },
-    {
-        "name": "Anville",
-        "lat": 20.3,
-        "longitude": 51.1,
-        "diameter": 10
-    },
-    {
-        "name": "Apianus",
-        "lat": -26.1,
-        "longitude": 7.6,
-        "diameter": 63
-    },
-    {
-        "name": "Apollo",
-        "lat": -36.2,
-        "longitude": -151.7,
-        "diameter": 524
-    },
-    {
-        "name": "Apollonius",
-        "lat": 4.9,
-        "longitude": 61.1,
-        "diameter": 53
-    },
-    {
-        "name": "Appleton",
-        "lat": 36.3,
-        "longitude": 160.4,
-        "diameter": 63
-    },
-    {
-        "name": "Arago",
-        "lat": 6.2,
-        "longitude": 21.4,
-        "diameter": 26
-    },
-    {
-        "name": "Aratus",
-        "lat": 23.5,
-        "longitude": 4.5,
-        "diameter": 10
-    },
-    {
-        "name": "Archimedes",
-        "lat": 29.7,
-        "longitude": -4.0,
-        "diameter": 83
-    },
-    {
-        "name": "Archytas",
-        "lat": 58.7,
-        "longitude": 3.7,
-        "diameter": 31
-    },
-    {
-        "name": "Argelander",
-        "lat": -16.5,
-        "longitude": 5.8,
-        "diameter": 34
-    },
-    {
-        "name": "Ariadaeus",
-        "lat": 4.7,
-        "longitude": 14.0,
-        "diameter": 11
-    },
-    {
-        "name": "Aristarco",
-        "lat": 23.7,
-        "longitude": -47.4,
-        "diameter": 40
-    },
-    {
-        "name": "Aristillus",
-        "lat": 33.9,
-        "longitude": 1.2,
-        "diameter": 55
-    },
-    {
-        "name": "Aristoteles",
-        "lat": 50.2,
-        "longitude": 17.4,
-        "diameter": 87
-    },
-    {
-        "name": "Armiński",
-        "lat": -16.4,
-        "longitude": 15.3,
-        "diameter": 26
-    },
-    {
-        "name": "Armstrong",
-        "lat": 1.4,
-        "longitude": 25.0,
-        "diameter": 4.6
-    },
-    {
-        "name": "Arnold",
-        "lat": 66.8,
-        "longitude": 35.9,
-        "diameter": 94
-    },
-    {
-        "name": "Arrhenius",
-        "lat": -56.0,
-        "longitude": -89.8,
-        "diameter": 40
-    },
-    {
-        "name": "Artamonov",
-        "lat": 25.6,
-        "longitude": 104.2,
-        "diameter": 61
-    },
-    {
-        "name": "Artem'ev",
-        "lat": 10.4,
-        "longitude": -144.5,
-        "diameter": 66
-    },
-    {
-        "name": "Artemis",
-        "lat": 13.9,
-        "longitude": 2.5,
-        "diameter": 2.3
-    },
-    {
-        "name": "Artsimovich",
-        "lat": 27.6,
-        "longitude": -38.5,
-        "diameter": 8
-    },
-    {
-        "name": "Arzachel",
-        "lat": -18.2,
-        "longitude": -1.9,
-        "diameter": 96
-    },
-    {
-        "name": "Asada",
-        "lat": 7.3,
-        "longitude": 49.9,
-        "diameter": 12
-    },
-    {
-        "name": "Asclepi",
-        "lat": -55.2,
-        "longitude": 25.4,
-        "diameter": 42
-    },
-    {
-        "name": "Ashbrook",
-        "lat": -78.1,
-        "longitude": -118.9,
-        "diameter": 156
-    },
-    {
-        "name": "Aston",
-        "lat": 32.7,
-        "longitude": -87.7,
-        "diameter": 43
-    },
-    {
-        "name": "Atlas",
-        "lat": 46.7,
-        "longitude": 44.4,
-        "diameter": 87
-    },
-    {
-        "name": "Atwood",
-        "lat": -5.9,
-        "longitude": 78.4,
-        "diameter": 29
-    },
-    {
-        "name": "Autolycus",
-        "lat": 30.7,
-        "longitude": 1.5,
-        "diameter": 39
-    },
-    {
-        "name": "Auwers",
-        "lat": 15.1,
-        "longitude": 26.6,
-        "diameter": 20
-    },
-    {
-        "name": "Auzout",
-        "lat": 10.3,
-        "longitude": 63.8,
-        "diameter": 32
-    },
-    {
-        "name": "Avery",
-        "lat": 1.4,
-        "longitude": 81.3,
-        "diameter": 9
-    },
-    {
-        "name": "Avicenna",
-        "lat": 39.9,
-        "longitude": -97.3,
-        "diameter": 74
-    },
-    {
-        "name": "Avogadro",
-        "lat": 63.3,
-        "longitude": 165.2,
-        "diameter": 139
-    },
-    {
-        "name": "Azophi",
-        "lat": -22.2,
-        "longitude": 12.7,
-        "diameter": 47
-    }
-];
 
 
 
