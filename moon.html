@@ -15,12 +15,12 @@
         // const rX=0.88;
         // const rY=0.87;
 
-        const rX=0.66;
-        const rY=0.66;
+        const rX=0.88;
+        const rY=0.88;
 
         // what is the rotation of the moon in the picture
-        const dLat=+5;//-4;
-        const dLon=1;
+        var dLat=0;//-4;
+        var dLon=0;
         </script>
 
    
@@ -53,18 +53,16 @@
 
         .moon-background {
             position: absolute;
-            xxtop: -2.8px;
-            xxleft: -1px;
-            top: -0px;
-            left: -0px;
+            top: -4px;
+            left: -1px;
            
             width: 100%;
             height: 100%;
             background-color: #05060e;
 
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/61/Moon_names.svg');
+            xxxbackground-image: url('https://upload.wikimedia.org/wikipedia/commons/6/61/Moon_names.svg');
             xxxbackground-image: url('GSFC_20171208_Archive_e001982~orig.jpg');
-            xxxbackground-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
             xxbackground-image: url('circle-1080.png');
             xxbackground-image: url('/home/bc2/Downloads/Beach_at_Fort_Lauderdale.jpg');
             background-size: cover;
@@ -90,6 +88,9 @@
         }
 
         #moon-labels {
+            position: absolute;
+            top:0;
+            left: 0;
             width: 100%;
             height: 100%;
             opacity: 0.9;
@@ -131,6 +132,7 @@
 
 
         .feature-label {
+            
             transform-origin: 0% 0%;
             position: absolute;
             color: white;
@@ -245,7 +247,7 @@
                         <span>Flip Vertical</span>
                     </label>
                     <label class="flex  text-left space-x-2 cursor-pointer">
-                        <input type="checkbox" id="night-vision" checked="checked"
+                        <input type="checkbox" id="night-vision" xxxchecked="checked"
                             class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
                         <span>Night vision</span>
                     </label>
@@ -254,6 +256,30 @@
                     <label for="rotation-slider" class="whitespace-nowrap">Rotation:</label>
                     <input type="range" id="rotation-slider" min="-90" max="90" value="0" class="w-[15em]">
                     <span id="rotationLabel"> <span>
+                </div>
+
+                <div class="flex  text-right space-x-2 text-sm">
+                    <label for="adjust-rMoon" class="whitespace-nowrap">rmoon:</label>
+                    <input type="range" id="adjust-rMoon" min="-45" max="45" value="0" class="w-[15em]">
+                    <span id="label-rMoon"> <span>
+                </div>
+
+                <div class="flex  text-right space-x-2 text-sm">
+                    <label for="adjust-dLat" class="whitespace-nowrap">dLat:</label>
+                    <input type="range" id="adjust-dLat" min="-30" max="30" value="-5" class="w-[15em]">
+                    <span id="label-dLat"> <span>
+                </div>
+
+                <div class="flex  text-right space-x-2 text-sm">
+                    <label for="adjust-dLon" class="whitespace-nowrap">dLon:</label>
+                    <input type="range" id="adjust-dLon" min="-30" max="30" value="-2" class="w-[15em]">
+                    <span id="label-dLon"> <span>
+                </div>
+
+                <div class="flex  text-right space-x-2 text-sm">
+                    <label for="adjust-rMoon2" class="whitespace-nowrap">rmoon2:</label>
+                    <input type="range" id="adjust-rMoon2" min="-45" max="45" value="-30" class="w-[15em]">
+                    <span id="label-rMoon2"> <span>
                 </div>
             </div>
 
@@ -321,6 +347,13 @@
         const rotationSlider = document.getElementById('rotation-slider');
         const rotationLabel = document.getElementById('rotationLabel');
 
+
+        const adjustdLat = document.getElementById('adjust-dLat');
+        const adjustdLon = document.getElementById('adjust-dLon');
+        
+        const adjustrMoon = document.getElementById('adjust-rMoon');
+        const adjustrMoon2 = document.getElementById('adjust-rMoon2');
+        
         // Constants
         const SYNODIC_MONTH = 29.530588853;
 
@@ -348,7 +381,9 @@
         var lastMouseX;
         var lastMouseY;
 
-
+        var rMoon=0;
+        var rMoon2=0;
+        
         function addListeners() {
             console.log(`addListeners()`);
 
@@ -412,11 +447,23 @@
 
             rotationSlider.addEventListener('input', (e) => {
                 parseLatitude();
-
             });
 
 
+            adjustdLat.addEventListener('input', (e) => {
+                parseAdjust();
+            });
+            adjustdLon.addEventListener('input', (e) => {
+                parseAdjust();
+            });
 
+            adjustrMoon.addEventListener('input', (e) => {
+                parseAdjust();
+            });
+
+            adjustrMoon2.addEventListener('input', (e) => {
+                parseAdjust();
+            });
 
             // --- Mouse Wheel Zoom Logic ---
             moonWrapper.addEventListener('wheel', (e) => {
@@ -498,7 +545,15 @@
             updateMoonTransform();
         }
 
+        function parseAdjust() {
+            rMoon = parseInt(adjustrMoon.value);
+            rMoon2 = parseInt(adjustrMoon2.value);
+            
+            dLon= parseInt(adjustdLon.value);
+            dLat= parseInt(adjustdLat.value);
 
+            updateMoonTransform();
+        }
 
         function init() {
 
@@ -508,7 +563,7 @@
             
             addListeners();
             initFeatures();
-
+          
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -517,6 +572,7 @@
             updateMoonPhase(today);
             parseNightVision();
             parseLatitude();
+            parseAdjust();
 
         }
 
@@ -694,11 +750,20 @@
             console.log(`transformString:${transformString}`);
             moonWrapper.style.transform = transformString;
 
-
+            labelsContainer.style.transform = `rotate(${rMoon}deg)`;
 
             featureElements.forEach((label, index) => {
                 const feature = features[index];
                 if (currentZoom > feature.minZoom) {
+
+                    let { x, y } = latlon2xy(feature.lat, feature.lon)
+                const left = 50+rX*x/2*100;
+                const top = 50-rY*y/2*100;
+                label.style.left = `${left}%`;
+                label.style.top = `${top}%`;
+
+
+
                     let invZoom = 1 / currentZoom;
                     let transformString = ''
 
@@ -722,12 +787,39 @@
 
         // x=cos(ϕ)⋅sin(λ)y=sin(ϕ)
         function latlon2xy(lat, lon) {
+
+
+            // // the visible face of the moon
+            // var rMoonRad = (rMoon) * Math.PI / 180; // Convert rmoon to radians
+            // var dMoon1=dMoon/100;
+            // lat=Math.cos(rMoonRad)*lat*dMoon1+Math.sin(rMoonRad)*lat*dMoon1;
+            // lon=Math.cos(rMoonRad)*lon*dMoon1+Math.sin(rMoonRad)*lon*dMoon1;
+
+            var dlatr = (dLat) * Math.PI / 180; // Convert latitude to radians
+            var dlonr = (dLon) * Math.PI / 180; // Convert lon to radians
+            
+            console.log(`dLat:${dLat}, dLon:${dLon}, rMoon2:${rMoon2}`);
            
-            var latr = (lat+dLat) * Math.PI / 180; // Convert latitude to radians
-            var lonr = (lon+dLon) * Math.PI / 180; // Convert lon to radians
-            var x = Math.cos(latr) * Math.sin(lonr);
-            var y =  Math.sin(latr);
-            return { x, y };
+            var latr = (lat) * Math.PI / 180; // Convert latitude to radians
+            var lonr = (lon) * Math.PI / 180; // Convert lon to radians
+
+            var x = Math.cos(latr) * Math.sin(lonr-dlonr);
+
+            // credits to google gemini for this formula 
+            var y=Math.cos(dlatr)*Math.sin(latr)-Math.sin(dlatr)*Math.cos(latr)*Math.cos(lonr-dlonr);
+
+            r=Math.sqrt(x*x + y*y);
+            if (x==0)
+                a=0;
+            else
+                a = Math.atan2(y,x);
+
+
+                var rMoon2Rad = (rMoon2) * Math.PI / 180; // Convert rmoon to radians    
+                x = r * Math.cos(a+rMoon2Rad) 
+                y = r * Math.sin(a+rMoon2Rad)
+
+                return { x, y };
         }
 
 
@@ -756,11 +848,11 @@
                         console.log("caguendeu");
                     }
                     if (Math.abs(feature.lon) <= 90){
-                        if (topFeatures.indexOf(feature.name)!=-1){
+                      //  if (topFeatures.indexOf(feature.name)!=-1 || feature.featureType=="debug"){
                         feature.featureType =featureType;
-                        feature.minZoom=0.5;//minZoom;
+                        feature.minZoom=minZoom;
                         features.push(feature);
-                        }
+                       // }
                     }
 
                 })
@@ -769,32 +861,25 @@
            
             // pushFeatures(mares,'mare',0.5);
             
-            pushFeatures(craters_tiny,'crater',5);
-            pushFeatures(craters_small,'crater',2.5);
-            pushFeatures(craters_medium,'crater',1);
-            pushFeatures(craters_large,'crater',0.5);
+            pushFeatures(craters_tiny,'crater',16);
+            pushFeatures(craters_small,'crater',8);
+            pushFeatures(craters_medium,'crater',4);
+            pushFeatures(craters_large,'crater',1);
 
 //    coordsFeatures();
 
-         
-
+addFeatureElements();
+        }
+        function addFeatureElements() {
+            // while (featureElements.firstChild) {
+            //     featureElementsarent.firstChild.remove()
+            // }
             // Create label elements
             features.forEach(feature => {
                 const label = document.createElement('div');
                 label.className = 'feature-label';
                 label.textContent = feature.name;
 
-                let { x, y } = latlon2xy(feature.lat, feature.lon)
-
-
-                
-                
-                
-
-                const left = 50+rX*x/2*100;
-                const top = 50-rY*y/2*100;
-                label.style.left = `${left}%`;
-                label.style.top = `${top}%`;
                 labelsContainer.appendChild(label);
                 featureElements.push(label);
             });
