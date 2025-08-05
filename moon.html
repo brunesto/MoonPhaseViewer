@@ -252,6 +252,12 @@
             <div class=" text-left mx-auto space-y-2">
                 <div class="flex text-left  space-x-4 text-sm">
                     <label class="flex  text-left space-x-2 cursor-pointer">
+                        <input type="checkbox" id="night-vision" xxxchecked="checked"
+                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
+                        <span>Night vision</span>
+                    </label>
+
+                    <label class="flex  text-left space-x-2 cursor-pointer">
                         <input type="checkbox" id="flip-horizontal"
                             class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
                         <span>Flip Horizontal</span>
@@ -261,11 +267,7 @@
                             class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
                         <span>Flip Vertical</span>
                     </label>
-                    <label class="flex  text-left space-x-2 cursor-pointer">
-                        <input type="checkbox" id="night-vision" xxxchecked="checked"
-                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
-                        <span>Night vision</span>
-                    </label>
+                   
                 </div>
                 <div class="flex  text-right space-x-2 text-sm">
                     <label for="rotation-slider" class="whitespace-nowrap">Rotation:</label>
@@ -305,6 +307,13 @@
 
             <div id="labels" class=" text-left mx-auto space-y-2">
 
+            </div>
+
+            <div class="flex  text-right space-x-2 text-sm">
+                Credits: 
+                Feature list &amp;&nbsp;
+                <a class="underline" href="https://en.wikipedia.org/wiki/File:FullMoon2010.jpg"> Moon image </a> 
+                &nbsp;from <a class="underline" href="https://en.wikipedia.org">Wikipedia</a>
             </div>
         </div>
     </div>
@@ -436,12 +445,11 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
         var lastMouseY;
 
       
-        // var rMoon2=0;
-
-
-        addSlider('adjustments','adjust-dLat','dLat',-45,45,dLat,(e)=>{dLat=Number(e.target.value);updateMoonTransform();});
-        addSlider('adjustments','adjust-dLon','dLon',-45,45,dLon,(e)=>{dLon=Number(e.target.value);updateMoonTransform();});
-        addSlider('adjustments','adjust-rMoon','rMoon',-45,45,rMoon,(e)=>{rMoon=Number(e.target.value);updateMoonTransform();});
+       
+        // display adjusting sliders only to debug picture
+        // addSlider('adjustments','adjust-dLat','dLat',-45,45,dLat,(e)=>{dLat=Number(e.target.value);updateMoonTransform();});
+        // addSlider('adjustments','adjust-dLon','dLon',-45,45,dLon,(e)=>{dLon=Number(e.target.value);updateMoonTransform();});
+        // addSlider('adjustments','adjust-rMoon','rMoon',-45,45,rMoon,(e)=>{rMoon=Number(e.target.value);updateMoonTransform();});
 
         function addListeners() {
             console.log(`addListeners()`);
@@ -816,9 +824,13 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
                 const checkBoxId='show-'+feature.codename;
                 // console.log("checkBoxId:"+checkBoxId+" is "+document.getElementById(checkBoxId).checked);
 
-                // BUG here, obviously I should take into account dLat too
+                // BUG here: Obviously I should take into account dLat too
 
-                const featureVisibleFromEarth=Math.abs(feature.lon-dLon)<89;
+                cutoffLat=88;
+                if (feature.codename=="tiny-craters" || feature.codename=="small-craters" ) 
+                    cutoffLat=80;
+                const featureVisibleFromEarth=Math.abs(feature.lon-dLon)<cutoffLat;
+
                 const visibleCozInteresting=displayInterestingFeatures &&topFeatures.indexOf(feature.name)!=-1 ;
                 const visibleCozSelected=document.getElementById(checkBoxId).checked;
                 if ( featureVisibleFromEarth &&
@@ -932,14 +944,14 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
                 })
         }
         function initFeatures() {
-            addCheckBox('labels','show-interesting', 'Prominent',displayInterestingFeatures,(e)=>{displayInterestingFeatures=e.target.checked;updateMoonTransform();});
+            addCheckBox('labels','show-interesting', 'Prominent features',displayInterestingFeatures,(e)=>{displayInterestingFeatures=e.target.checked;updateMoonTransform();});
             pushFeatures(mares,'mare',0.5,"mares","Mares",()=>updateMoonTransform());
             
-            pushFeatures(craters_tiny,'crater',16,"tiny-craters","Tiny Craters",()=>updateMoonTransform());
-            pushFeatures(craters_small,'crater',8,"small-craters","Small Craters",()=>updateMoonTransform());
-            pushFeatures(craters_medium,'crater',4,"medium-craters","Medium Craters",()=>updateMoonTransform());
             pushFeatures(craters_large,'crater',1,"large-craters","Large Craters",()=>updateMoonTransform()); 
-
+            pushFeatures(craters_medium,'crater',4,"medium-craters","Medium Craters",()=>updateMoonTransform());
+            pushFeatures(craters_small,'crater',8,"small-craters","Small Craters",()=>updateMoonTransform());
+            pushFeatures(craters_tiny,'crater',16,"tiny-craters","Tiny Craters",()=>updateMoonTransform());
+        
           
             
 
