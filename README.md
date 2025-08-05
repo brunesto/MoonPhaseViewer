@@ -1,10 +1,10 @@
 # Display the moon and its terminator.
 
-[moon.html](https://html-preview.github.io/?url=https://github.com/brunesto/MoonPhaseViewer/blob/main/moon.html)
+[moon.html](moon.html)
 
 Night mode and axis-flipping options make it easier to identify features while looking at the moon thru a telescope.
 
-Original non working prototype made by google gemini and 3 pints of lager in 30 minutes.
+Original non working prototype made by google gemini after some lager ingestion.
 
 Manually fixed by hominid for few hours and lots of coffee.
 

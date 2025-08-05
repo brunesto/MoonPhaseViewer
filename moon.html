@@ -19,8 +19,10 @@
         const rY=0.88;
 
         // what is the rotation of the moon in the picture
-        var dLat=0;//-4;
-        var dLon=0;
+        var dLat=-5;//-4;
+        var dLon=-2;
+        var rMoon=-30;
+
         </script>
 
    
@@ -258,28 +260,30 @@
                     <span id="rotationLabel"> <span>
                 </div>
 
-                <div class="flex  text-right space-x-2 text-sm">
-                    <label for="adjust-rMoon" class="whitespace-nowrap">rmoon:</label>
-                    <input type="range" id="adjust-rMoon" min="-45" max="45" value="0" class="w-[15em]">
-                    <span id="label-rMoon"> <span>
-                </div>
+                <div id="adjustments" class=" text-left mx-auto space-y-2">
+                    <!-- <div class="flex  text-right space-x-2 text-sm">
+                        <label for="adjust-rMoon" class="whitespace-nowrap">rmoon:</label>
+                        <input type="range" id="adjust-rMoon" min="-45" max="45" value="0" class="w-[15em]">
+                        <span id="label-rMoon"> <span>
+                    </div> -->
 
-                <div class="flex  text-right space-x-2 text-sm">
-                    <label for="adjust-dLat" class="whitespace-nowrap">dLat:</label>
-                    <input type="range" id="adjust-dLat" min="-30" max="30" value="-5" class="w-[15em]">
-                    <span id="label-dLat"> <span>
-                </div>
+                    <!--div class="flex  text-right space-x-2 text-sm">
+                        <label for="adjust-dLat" class="whitespace-nowrap">dLat:</label>
+                        <input type="range" id="adjust-dLat" min="-30" max="30" value="-5" class="w-[15em]">
+                        <span id="label-dLat"> <span>
+                    </div>
 
-                <div class="flex  text-right space-x-2 text-sm">
-                    <label for="adjust-dLon" class="whitespace-nowrap">dLon:</label>
-                    <input type="range" id="adjust-dLon" min="-30" max="30" value="-2" class="w-[15em]">
-                    <span id="label-dLon"> <span>
-                </div>
-
-                <div class="flex  text-right space-x-2 text-sm">
-                    <label for="adjust-rMoon2" class="whitespace-nowrap">rmoon2:</label>
-                    <input type="range" id="adjust-rMoon2" min="-45" max="45" value="-30" class="w-[15em]">
-                    <span id="label-rMoon2"> <span>
+                    <div class="flex  text-right space-x-2 text-sm">
+                        <label for="adjust-dLon" class="whitespace-nowrap">dLon:</label>
+                        <input type="range" id="adjust-dLon" min="-30" max="30" value="-2" class="w-[15em]">
+                        <span id="label-dLon"> <span>
+                    </div-->
+<!-- 
+                    <div class="flex  text-right space-x-2 text-sm">
+                        <label for="adjust-rMoon2" class="whitespace-nowrap">rmoon2:</label>
+                        <input type="range" id="adjust-rMoon2" min="-45" max="45" value="-30" class="w-[15em]">
+                        <span id="label-rMoon2"> <span>
+                    </div> -->
                 </div>
             </div>
 
@@ -287,6 +291,11 @@
             <div class="pt-2">
                 <h2 id="phase-name" class="text-lg font-semibold text-indigo-400"></h2>
                 <p id="illumination" class="text-gray-300 text-sm"></p>
+            </div>
+
+
+            <div id="labels" class=" text-left mx-auto space-y-2">
+
             </div>
         </div>
     </div>
@@ -300,6 +309,41 @@
     <script src="mares.js"></script>
     
             <script>
+/**
+ * add a slider that displays its value
+ */
+function addSlider(parentid,id2use,label,min,max,value,listener){
+        document.getElementById(parentid).insertAdjacentHTML('beforeend', `
+                <div class="flex  text-right space-x-2 text-sm">
+                <label  for="${id2use}" class="whitespace-nowrap">${label}</label>
+                <input type="range" id="${id2use}" min="${min}" max="${max}" value="${value}" class="w-[15em]">
+                <span id="${id2use}-display-value">${value}<span>
+            </div>`);
+
+    const element=document.getElementById(id2use);
+    element.addEventListener('input', (e) => {
+        document.getElementById(id2use+"-display-value").innerText = e.target.value;
+        listener.apply(this,[e]);
+    });
+}
+
+/**
+ * adds a check box
+ */
+function addCheckBox(parentid,id2use,label,onClickListener){
+    document.getElementById(parentid).insertAdjacentHTML('beforeend', `<label id="${id2use}-label" class="flex  text-left space-x-2 cursor-pointer">
+                        <input type="checkbox" id="${id2use}"
+                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
+                        <span>${label}</span>
+                    </label>`);
+    const element=document.getElementById(id2use+"-label");
+    element.addEventListener('click', (e) => {
+        console.log(id2use);
+        onClickListener.apply(this,[e]);
+    });
+}
+
+
         // --- LUNAR FEATURE DATA ---
         // const moonFeatures = [
         //     { name: "Sea of Tranquility", x: 0.53, y: 0.15, z: 0.83 },
@@ -348,11 +392,11 @@
         const rotationLabel = document.getElementById('rotationLabel');
 
 
-        const adjustdLat = document.getElementById('adjust-dLat');
-        const adjustdLon = document.getElementById('adjust-dLon');
+        // const adjustdLat = document.getElementById('adjust-dLat');
+        // const adjustdLon = document.getElementById('adjust-dLon');
         
-        const adjustrMoon = document.getElementById('adjust-rMoon');
-        const adjustrMoon2 = document.getElementById('adjust-rMoon2');
+        // const adjustrMoon = document.getElementById('adjust-rMoon');
+        // const adjustrMoon2 = document.getElementById('adjust-rMoon2');
         
         // Constants
         const SYNODIC_MONTH = 29.530588853;
@@ -381,9 +425,14 @@
         var lastMouseX;
         var lastMouseY;
 
-        var rMoon=0;
-        var rMoon2=0;
-        
+      
+        // var rMoon2=0;
+
+
+        addSlider('adjustments','adjust-dLat','dLat',-45,45,dLat,(e)=>{dLat=e.target.value;updateMoonTransform();});
+        addSlider('adjustments','adjust-dLon','dLon',-45,45,dLon,(e)=>{dLon=e.target.value;updateMoonTransform();});
+        addSlider('adjustments','adjust-rMoon','rMoon',-45,45,rMoon,(e)=>{rMoon=e.target.value;updateMoonTransform();});
+
         function addListeners() {
             console.log(`addListeners()`);
 
@@ -450,20 +499,20 @@
             });
 
 
-            adjustdLat.addEventListener('input', (e) => {
-                parseAdjust();
-            });
-            adjustdLon.addEventListener('input', (e) => {
-                parseAdjust();
-            });
+            // adjustdLat.addEventListener('input', (e) => {
+            //     parseAdjust();
+            // });
+            // adjustdLon.addEventListener('input', (e) => {
+            //     parseAdjust();
+            // });
 
-            adjustrMoon.addEventListener('input', (e) => {
-                parseAdjust();
-            });
+            // adjustrMoon.addEventListener('input', (e) => {
+            //     parseAdjust();
+            // });
 
-            adjustrMoon2.addEventListener('input', (e) => {
-                parseAdjust();
-            });
+            // adjustrMoon2.addEventListener('input', (e) => {
+            //     parseAdjust();
+            // });
 
             // --- Mouse Wheel Zoom Logic ---
             moonWrapper.addEventListener('wheel', (e) => {
@@ -546,11 +595,11 @@
         }
 
         function parseAdjust() {
-            rMoon = parseInt(adjustrMoon.value);
-            rMoon2 = parseInt(adjustrMoon2.value);
+            // rMoon = parseInt(adjustrMoon.value);
+            // rMoon2 = parseInt(adjustrMoon2.value);
             
-            dLon= parseInt(adjustdLon.value);
-            dLat= parseInt(adjustdLat.value);
+            // dLon= parseInt(adjustdLon.value);
+            // dLat= parseInt(adjustdLat.value);
 
             updateMoonTransform();
         }
@@ -750,11 +799,15 @@
             console.log(`transformString:${transformString}`);
             moonWrapper.style.transform = transformString;
 
-            labelsContainer.style.transform = `rotate(${rMoon}deg)`;
+            // labelsContainer.style.transform = `rotate(${rMoon}deg)`;
 
             featureElements.forEach((label, index) => {
                 const feature = features[index];
-                if (currentZoom > feature.minZoom) {
+                const checkBoxId='show-'+feature.codename;
+                // console.log("checkBoxId:"+checkBoxId+" is "+document.getElementById(checkBoxId).checked);
+                if (document.getElementById(checkBoxId).checked){
+
+                // if (currentZoom > feature.minZoom) {
 
                     let { x, y } = latlon2xy(feature.lat, feature.lon)
                 const left = 50+rX*x/2*100;
@@ -798,7 +851,7 @@
             var dlatr = (dLat) * Math.PI / 180; // Convert latitude to radians
             var dlonr = (dLon) * Math.PI / 180; // Convert lon to radians
             
-            console.log(`dLat:${dLat}, dLon:${dLon}, rMoon2:${rMoon2}`);
+            // console.log(`dLat:${dLat}, dLon:${dLon}, rMoon2:${rMoon2}`);
            
             var latr = (lat) * Math.PI / 180; // Convert latitude to radians
             var lonr = (lon) * Math.PI / 180; // Convert lon to radians
@@ -815,7 +868,7 @@
                 a = Math.atan2(y,x);
 
 
-                var rMoon2Rad = (rMoon2) * Math.PI / 180; // Convert rmoon to radians    
+                var rMoon2Rad = (rMoon) * Math.PI / 180; // Convert rmoon to radians    
                 x = r * Math.cos(a+rMoon2Rad) 
                 y = r * Math.sin(a+rMoon2Rad)
 
@@ -842,29 +895,34 @@
 
         const topFeatures=["Stevinus","Langrenus","Grimaldi","Tycho","Copernicus", "Kepler","Aristarchus", "Plato"];
 
-        function pushFeatures(set,featureType,minZoom) {
+        function pushFeatures(set,featureType,minZoom,codename,nicename,onClickListener) {
+
+            const checkBoxId='show-'+codename;
+            addCheckBox('labels',checkBoxId, 'Show '+nicename,onClickListener);
+            
             set.forEach(feature => {
-                    if (feature.name=="Grimaldi") {
-                        console.log("caguendeu");
-                    }
                     if (Math.abs(feature.lon) <= 90){
-                      //  if (topFeatures.indexOf(feature.name)!=-1 || feature.featureType=="debug"){
+                        // if (topFeatures.indexOf(feature.name)!=-1 || feature.featureType=="debug"){
                         feature.featureType =featureType;
                         feature.minZoom=minZoom;
                         features.push(feature);
-                       // }
+                        feature.codename=codename;
                     }
 
                 })
         }
         function initFeatures() {
            
-            // pushFeatures(mares,'mare',0.5);
+            pushFeatures(mares,'mare',0.5,"mares","Mares",()=>updateMoonTransform());
             
-            pushFeatures(craters_tiny,'crater',16);
-            pushFeatures(craters_small,'crater',8);
-            pushFeatures(craters_medium,'crater',4);
-            pushFeatures(craters_large,'crater',1);
+            pushFeatures(craters_tiny,'crater',16,"tiny-craters","Tiny Craters",()=>updateMoonTransform());
+            pushFeatures(craters_small,'crater',8,"small-craters","Small Craters",()=>updateMoonTransform());
+            pushFeatures(craters_medium,'crater',4,"medium-craters","Medium Craters",()=>updateMoonTransform());
+            pushFeatures(craters_large,'crater',1,"large-craters","Large Craters",()=>updateMoonTransform()); 
+
+          
+            
+
 
 //    coordsFeatures();
 
