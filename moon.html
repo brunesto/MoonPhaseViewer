@@ -11,17 +11,18 @@
    
     <script>
 
+
+        // https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg
+
         // how much of the background picture is taken by the moon
-        // const rX=0.88;
-        // const rY=0.87;
 
         const rX=0.88;
         const rY=0.88;
 
         // what is the rotation of the moon in the picture
-        var dLat=-5;//-4;
-        var dLon=-2;
-        var rMoon=-30;
+        var dLat=-4.8;//-4;
+        var dLon=-3.4;
+        var rMoon=-29.3;
 
         </script>
 
@@ -316,7 +317,7 @@ function addSlider(parentid,id2use,label,min,max,value,listener){
         document.getElementById(parentid).insertAdjacentHTML('beforeend', `
                 <div class="flex  text-right space-x-2 text-sm">
                 <label  for="${id2use}" class="whitespace-nowrap">${label}</label>
-                <input type="range" id="${id2use}" min="${min}" max="${max}" value="${value}" class="w-[15em]">
+                <input type="range" id="${id2use}" min="${min}" max="${max}" value="${value}" class="w-[15em]" step="0.1">
                 <span id="${id2use}-display-value">${value}<span>
             </div>`);
 
@@ -805,7 +806,10 @@ function addCheckBox(parentid,id2use,label,onClickListener){
                 const feature = features[index];
                 const checkBoxId='show-'+feature.codename;
                 // console.log("checkBoxId:"+checkBoxId+" is "+document.getElementById(checkBoxId).checked);
-                if (document.getElementById(checkBoxId).checked){
+
+                if (topFeatures.indexOf(feature.name)!=-1 ||
+                 feature.featureType=="debug" ||
+                 document.getElementById(checkBoxId).checked){
 
                 // if (currentZoom > feature.minZoom) {
 
@@ -893,7 +897,11 @@ function addCheckBox(parentid,id2use,label,onClickListener){
 
         }
 
-        const topFeatures=["Stevinus","Langrenus","Grimaldi","Tycho","Copernicus", "Kepler","Aristarchus", "Plato"];
+        const topFeatures=["Albategnius","Aristarchus","Aristoteles","Bailly","Clavius","Copernicus","Fra","Humboldt","Janssen","Langrenus",
+        "Maginus","Metius","Moretus","Petavius","Picard","Piccolomini","Pitatus","Plinius","Rheita","Russell","Schickard","Seleucus","Stadius","Stöfler","Thebit","Theophilus","Tycho","Vendelinus","Wargentin",
+            "Manilius","Godin","Plato","Archimedes","Posidonus","Kepler","Lubiniezky","Billy","Gassendi","Bullialdus"
+        ];
+
 
         function pushFeatures(set,featureType,minZoom,codename,nicename,onClickListener) {
 
@@ -902,7 +910,6 @@ function addCheckBox(parentid,id2use,label,onClickListener){
             
             set.forEach(feature => {
                     if (Math.abs(feature.lon) <= 90){
-                        // if (topFeatures.indexOf(feature.name)!=-1 || feature.featureType=="debug"){
                         feature.featureType =featureType;
                         feature.minZoom=minZoom;
                         features.push(feature);
