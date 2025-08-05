@@ -137,7 +137,12 @@ def scrape_crater_data(url):
                 cells = row.find_all("td")
                 if len(cells) > max(name_index, diameter_index):
                     name = cells[name_index].get_text(strip=True)
-                   
+                    a=cells[0].find("a")
+                    if a is not None:
+                        link = a["href"]
+                    else:
+                        link= None    
+
                     diameter_text = cells[diameter_index].get_text(strip=True)
 
                     coordinates_text = cells[coordinates_index].get_text(strip=True).upper()
@@ -145,13 +150,16 @@ def scrape_crater_data(url):
                     if lat is None or lon is None:
                         continue
 
-                    if (lon>90 or lon<-90):
+                    if (lon>100 or lon<-100):
                         print(name+" is on far side")
                         continue
                         
                     diameter = float(diameter_text)
 
-                    craters.append({"name": name, "diameter": diameter ,"lat": lat,"lon": lon})
+                    map={"name": name, "diameter": diameter ,"lat": lat,"lon": lon}
+                    if link is not None:
+                        map["link"]=link
+                    craters.append(map)
         
 
     except requests.exceptions.RequestException as e:

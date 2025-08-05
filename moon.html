@@ -134,6 +134,11 @@
         }
 
 
+        a.feature-label:hover {
+            opacity: 1;
+            text-decoration: underline;            
+        }
+
         .feature-label {
             
             transform-origin: 0% 0%;
@@ -143,7 +148,7 @@
             /* Made font slightly smaller to reduce clutter */
             text-shadow: 0 0 5px black;
             white-space: nowrap;
-            transformXXX: translate(-50%, -50%);
+            
             /* Center the label on its coordinates */
             opacity: 0.5;
             text-align: left;
@@ -220,6 +225,13 @@
 
             </div>
 
+             <!-- Moon phase information -->
+             <div class="pt-2">
+                <h2 id="phase-name" class="text-lg font-semibold text-indigo-400"></h2>
+                <p id="illumination" class="text-gray-300 text-sm"></p>
+            </div>
+
+
             <!-- Pan and Zoom Controls -->
             <div class="flex text-left items-center space-x-2 md:space-x-4">
                 <button id="pan-left"
@@ -288,11 +300,7 @@
                 </div>
             </div>
 
-            <!-- Moon phase information -->
-            <div class="pt-2">
-                <h2 id="phase-name" class="text-lg font-semibold text-indigo-400"></h2>
-                <p id="illumination" class="text-gray-300 text-sm"></p>
-            </div>
+           
 
 
             <div id="labels" class=" text-left mx-auto space-y-2">
@@ -331,10 +339,11 @@ function addSlider(parentid,id2use,label,min,max,value,listener){
 /**
  * adds a check box
  */
-function addCheckBox(parentid,id2use,label,onClickListener){
+function addCheckBox(parentid,id2use,label,checked,onClickListener){
+    checkedPair=checked?"checked":"";
     document.getElementById(parentid).insertAdjacentHTML('beforeend', `<label id="${id2use}-label" class="flex  text-left space-x-2 cursor-pointer">
                         <input type="checkbox" id="${id2use}"
-                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500">
+                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500" ${checkedPair}>
                         <span>${label}</span>
                     </label>`);
     const element=document.getElementById(id2use+"-label");
@@ -366,7 +375,7 @@ function addCheckBox(parentid,id2use,label,onClickListener){
         let featureElements = [];
         let features = [];
 
-
+        displayInterestingFeatures=true;
 
  
         // DOM Elements
@@ -430,9 +439,9 @@ function addCheckBox(parentid,id2use,label,onClickListener){
         // var rMoon2=0;
 
 
-        addSlider('adjustments','adjust-dLat','dLat',-45,45,dLat,(e)=>{dLat=e.target.value;updateMoonTransform();});
-        addSlider('adjustments','adjust-dLon','dLon',-45,45,dLon,(e)=>{dLon=e.target.value;updateMoonTransform();});
-        addSlider('adjustments','adjust-rMoon','rMoon',-45,45,rMoon,(e)=>{rMoon=e.target.value;updateMoonTransform();});
+        addSlider('adjustments','adjust-dLat','dLat',-45,45,dLat,(e)=>{dLat=Number(e.target.value);updateMoonTransform();});
+        addSlider('adjustments','adjust-dLon','dLon',-45,45,dLon,(e)=>{dLon=Number(e.target.value);updateMoonTransform();});
+        addSlider('adjustments','adjust-rMoon','rMoon',-45,45,rMoon,(e)=>{rMoon=Number(e.target.value);updateMoonTransform();});
 
         function addListeners() {
             console.log(`addListeners()`);
@@ -807,9 +816,13 @@ function addCheckBox(parentid,id2use,label,onClickListener){
                 const checkBoxId='show-'+feature.codename;
                 // console.log("checkBoxId:"+checkBoxId+" is "+document.getElementById(checkBoxId).checked);
 
-                if (topFeatures.indexOf(feature.name)!=-1 ||
-                 feature.featureType=="debug" ||
-                 document.getElementById(checkBoxId).checked){
+                // BUG here, obviously I should take into account dLat too
+
+                const featureVisibleFromEarth=Math.abs(feature.lon-dLon)<89;
+                const visibleCozInteresting=displayInterestingFeatures &&topFeatures.indexOf(feature.name)!=-1 ;
+                const visibleCozSelected=document.getElementById(checkBoxId).checked;
+                if ( featureVisibleFromEarth &&
+                 (visibleCozInteresting ||  feature.featureType=="debug" || visibleCozSelected)){
 
                 // if (currentZoom > feature.minZoom) {
 
@@ -899,27 +912,27 @@ function addCheckBox(parentid,id2use,label,onClickListener){
 
         const topFeatures=["Albategnius","Aristarchus","Aristoteles","Bailly","Clavius","Copernicus","Fra","Humboldt","Janssen","Langrenus",
         "Maginus","Metius","Moretus","Petavius","Picard","Piccolomini","Pitatus","Plinius","Rheita","Russell","Schickard","Seleucus","Stadius","Stöfler","Thebit","Theophilus","Tycho","Vendelinus","Wargentin",
-            "Manilius","Godin","Plato","Archimedes","Posidonus","Kepler","Lubiniezky","Billy","Gassendi","Bullialdus"
+            "Manilius","Godin","Plato","Archimedes","Posidonus","Kepler","Lubiniezky","Billy","Gassendi","Bullialdus","Gassendi"
         ];
 
 
         function pushFeatures(set,featureType,minZoom,codename,nicename,onClickListener) {
 
             const checkBoxId='show-'+codename;
-            addCheckBox('labels',checkBoxId, 'Show '+nicename,onClickListener);
+            addCheckBox('labels',checkBoxId, nicename,false,onClickListener);
             
             set.forEach(feature => {
-                    if (Math.abs(feature.lon) <= 90){
+                    
                         feature.featureType =featureType;
                         feature.minZoom=minZoom;
                         features.push(feature);
                         feature.codename=codename;
-                    }
+                    
 
                 })
         }
         function initFeatures() {
-           
+            addCheckBox('labels','show-interesting', 'Prominent',displayInterestingFeatures,(e)=>{displayInterestingFeatures=e.target.checked;updateMoonTransform();});
             pushFeatures(mares,'mare',0.5,"mares","Mares",()=>updateMoonTransform());
             
             pushFeatures(craters_tiny,'crater',16,"tiny-craters","Tiny Craters",()=>updateMoonTransform());
@@ -941,7 +954,16 @@ addFeatureElements();
             // }
             // Create label elements
             features.forEach(feature => {
-                const label = document.createElement('div');
+                var label=null
+                if (feature.link){
+                    label = document.createElement('a');
+                    label.href = "https://en.wikipedia.org/"+feature.link;
+                    label.target = '_blank';
+                } else {
+                    label = document.createElement('div');
+                }
+                
+
                 label.className = 'feature-label';
                 label.textContent = feature.name;
 
