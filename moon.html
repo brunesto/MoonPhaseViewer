@@ -16,13 +16,13 @@
 
         // how much of the background picture is taken by the moon
 
-        const rX=0.88;
-        const rY=0.88;
+        const rX=0.83;
+        const rY=0.83;
 
         // what is the rotation of the moon in the picture
-        var dLat=-4.8;//-4;
+        var dLat=-5.6;//-4;
         var dLon=-3.4;
-        var rMoon=-29.3;
+        var rMoon=-15.3;
 
         </script>
 
@@ -53,28 +53,38 @@
             background-color: #000;
         }
 
+        #moon-background-img{
+            position: absolute;
+            top:1.6%;
+            left: -0.2%;
+            /* width: 100%;
+            height: 100%; */
+            background-color: #05060e;
+        }
 
         .moon-background {
             position: absolute;
-            top: -4px;
-            left: -1px;
-           
+            top:0px;
+            left: 0px;
             width: 100%;
             height: 100%;
-            background-color: #05060e;
-
+            
+           
             xxxbackground-image: url('https://upload.wikimedia.org/wikipedia/commons/6/61/Moon_names.svg');
             xxxbackground-image: url('GSFC_20171208_Archive_e001982~orig.jpg');
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
+            xxbackground-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
+            xxbackground-origin: content-box;
+            xxbackground-position: left -10% top 10% ;
+            
             xxbackground-image: url('circle-1080.png');
             xxbackground-image: url('/home/bc2/Downloads/Beach_at_Fort_Lauderdale.jpg');
-            background-size: cover;
-            background-position: center center;
+            xxbackground-size: cover;
+            
             xxxborder-radius: 50%;
             /* Ensure the moon texture is a circle */
 
             filter: brightness(50%);
-            rotate: 14deg;
+            xxrotate: 0deg;
 
 
         }
@@ -85,17 +95,22 @@
 
 
         #terminator {
+            position: absolute;
+            top:0px;
+            left: 0px;
             width: 100%;
             height: 100%;
+
             opacity: 0.9;
         }
 
         #moon-labels {
             position: absolute;
-            top:0;
-            left: 0;
+            top:0px;
+            left: 0px;
             width: 100%;
             height: 100%;
+
             opacity: 0.9;
         }
 
@@ -196,7 +211,7 @@
     <div class="center-container">
         <div id="moon-wrapper" class="moon-wrapper">
 
-            <div id="moon" class="moon-background center"></div>
+            <div id="moon" class="moon-background center"><img id="moon-background-img" src="https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg"/></div>
             <canvas id="terminator" class="terminator center"></canvas>
             <div id="moon-labels" class="moon-labels center"></div>
 
@@ -276,29 +291,7 @@
                 </div>
 
                 <div id="adjustments" class=" text-left mx-auto space-y-2">
-                    <!-- <div class="flex  text-right space-x-2 text-sm">
-                        <label for="adjust-rMoon" class="whitespace-nowrap">rmoon:</label>
-                        <input type="range" id="adjust-rMoon" min="-45" max="45" value="0" class="w-[15em]">
-                        <span id="label-rMoon"> <span>
-                    </div> -->
-
-                    <!--div class="flex  text-right space-x-2 text-sm">
-                        <label for="adjust-dLat" class="whitespace-nowrap">dLat:</label>
-                        <input type="range" id="adjust-dLat" min="-30" max="30" value="-5" class="w-[15em]">
-                        <span id="label-dLat"> <span>
-                    </div>
-
-                    <div class="flex  text-right space-x-2 text-sm">
-                        <label for="adjust-dLon" class="whitespace-nowrap">dLon:</label>
-                        <input type="range" id="adjust-dLon" min="-30" max="30" value="-2" class="w-[15em]">
-                        <span id="label-dLon"> <span>
-                    </div-->
-<!-- 
-                    <div class="flex  text-right space-x-2 text-sm">
-                        <label for="adjust-rMoon2" class="whitespace-nowrap">rmoon2:</label>
-                        <input type="range" id="adjust-rMoon2" min="-45" max="45" value="-30" class="w-[15em]">
-                        <span id="label-rMoon2"> <span>
-                    </div> -->
+                    <!-- populated by javascript -->
                 </div>
             </div>
 
@@ -363,28 +356,13 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
 }
 
 
-        // --- LUNAR FEATURE DATA ---
-        // const moonFeatures = [
-        //     { name: "Sea of Tranquility", x: 0.53, y: 0.15, z: 0.83 },
-        //     { name: "Sea of Serenity", x: 0.30, y: 0.47, z: 0.83 },
-        //     { name: "Sea of Crises", x: 0.83, y: 0.29, z: 0.47 },
-        //     { name: "Sea of Rains", x: -0.27, y: 0.64, z: 0.72 },
-        //     { name: "Ocean of Storms", x: -0.83, y: 0.26, z: 0.49 },
-        //     { name: "Sea of Nectar", x: 0.55, y: -0.26, z: 0.79 },
-        //     { name: "Sea of Clouds", x: -0.26, y: -0.37, z: 0.89 },
-        //     { name: "Sea of Moisture", x: -0.64, y: -0.35, z: 0.68 },
-        //     { name: "Tycho", x: -0.12, y: -0.69, z: 0.71 },
-        //     { name: "Copernicus", x: -0.35, y: 0.17, z: 0.92 },
-        //     { name: "Kepler", x: -0.63, y: 0.14, z: 0.76 },
-        //     { name: "Aristarchus", x: -0.74, y: 0.40, z: 0.54 },
-        //     { name: "Plato", x: -0.16, y: 0.85, z: 0.50 }
-        // ];
+       
 
 
         let featureElements = [];
         let features = [];
 
-        displayInterestingFeatures=true;
+        let displayInterestingFeatures=true;
 
  
         // DOM Elements
@@ -411,11 +389,7 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
         const rotationLabel = document.getElementById('rotationLabel');
 
 
-        // const adjustdLat = document.getElementById('adjust-dLat');
-        // const adjustdLon = document.getElementById('adjust-dLon');
-        
-        // const adjustrMoon = document.getElementById('adjust-rMoon');
-        // const adjustrMoon2 = document.getElementById('adjust-rMoon2');
+       
         
         // Constants
         const SYNODIC_MONTH = 29.530588853;
@@ -709,9 +683,7 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
             const circle = new Path2D();
            
           
-            // ctx.strokeStyle = '#FFFFFF';
-            // circle.arc(center_x, center_y,imgWidth, 0, 2 * Math.PI);
-            // ctx.stroke(circle);
+            
             
             console.log(`center:${center_x}, ${center_y}`);
 
@@ -770,8 +742,22 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
             ctx.fill();
 
 
+            // -- draw references to ensure image is center
+            // ctx.strokeStyle = 'green'; // Set the line color
+            // ctx.lineWidth = 1;       // Set the line width
+            // ctx.setLineDash([5, 5]);
 
-            console.log('Circle drawn successfully');
+
+            // // draw center
+            // ctx.beginPath();
+            // ctx.arc(center_x, center_y, 10, 0, 2 * Math.PI); 
+            // ctx.stroke();            // Render the outline
+
+            // // draw contour
+            // ctx.beginPath();
+            // ctx.arc(center_x, center_y, circleWidth/2, 0, 2 * Math.PI); 
+            // ctx.stroke();            // Render the outline
+
         }
 
 
@@ -826,15 +812,17 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
 
                 // BUG here: Obviously I should take into account dLat too
 
-                cutoffLat=88;
-                if (feature.codename=="tiny-craters" || feature.codename=="small-craters" ) 
+                var cutoffLat = 90;
+                if (feature.featureType=="debug") 
+                    cutoffLat=100;
+                else if (feature.codename=="tiny-craters" || feature.codename=="small-craters" ) 
                     cutoffLat=80;
                 const featureVisibleFromEarth=Math.abs(feature.lon-dLon)<cutoffLat;
 
                 const visibleCozInteresting=displayInterestingFeatures &&topFeatures.indexOf(feature.name)!=-1 ;
                 const visibleCozSelected=document.getElementById(checkBoxId).checked;
                 if ( featureVisibleFromEarth &&
-                 (visibleCozInteresting ||  feature.featureType=="debug" || visibleCozSelected)){
+                 (visibleCozInteresting ||   visibleCozSelected)){
 
                 // if (currentZoom > feature.minZoom) {
 
@@ -891,40 +879,41 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
             var y=Math.cos(dlatr)*Math.sin(latr)-Math.sin(dlatr)*Math.cos(latr)*Math.cos(lonr-dlonr);
 
             r=Math.sqrt(x*x + y*y);
-            if (x==0)
-                a=0;
-            else
-                a = Math.atan2(y,x);
+            a = Math.atan2(y,x);
 
 
-                var rMoon2Rad = (rMoon) * Math.PI / 180; // Convert rmoon to radians    
-                x = r * Math.cos(a+rMoon2Rad) 
-                y = r * Math.sin(a+rMoon2Rad)
+            var rMoon2Rad = (rMoon) * Math.PI / 180; // Convert rmoon to radians    
+            x = r * Math.cos(a+rMoon2Rad) 
+            y = r * Math.sin(a+rMoon2Rad)
 
-                return { x, y };
+            return { x, y };
         }
 
 
         function coordsFeatures() {
-            for (var lat = -90; lat <= 90; lat += 10) {
-                for (var lon = -90; lon <= 90; lon += 10) {
+            var coordss=[]
+            for (var lat = -90; lat <= 90; lat += 30) {
+                for (var lon = -90; lon <= 90; lon += 30) {
 
-                    features.push({
-                        featureType: "debug",
-                        minZoom:0.5,
-                        name: '',//`${lat},${lon}`,
+                    coordss.push({
+                        featureType: "debug",                        
+                        name: `${lat},${lon}`,
                         lat: lat,
                         lon: lon,
                         diameter: 1
                     });
                 }
             }
+            return coordss;
 
         }
 
-        const topFeatures=["Albategnius","Aristarchus","Aristoteles","Bailly","Clavius","Copernicus","Fra","Humboldt","Janssen","Langrenus",
-        "Maginus","Metius","Moretus","Petavius","Picard","Piccolomini","Pitatus","Plinius","Rheita","Russell","Schickard","Seleucus","Stadius","Stöfler","Thebit","Theophilus","Tycho","Vendelinus","Wargentin",
-            "Manilius","Godin","Plato","Archimedes","Posidonus","Kepler","Lubiniezky","Billy","Gassendi","Bullialdus","Gassendi"
+        const topFeatures=["Albategnius","Aristarchus","Aristoteles","Bailly","Rutherfurd","Copernicus","Fra","Stevinus","Langrenus",
+        "Moretus","Picard","Cook","Monge","Crozier","Piccolomini","Pitatus","Plinius","Rheita","Russell","Schickard","Seleucus","Stadius","Thebit","Theophilus","Tycho","Vendelinus","Wargentin",
+            "Manilius","Godin","Plato","Archimedes","Kepler","Lubiniezky","Billy","Gassendi","Bullialdus","Gassendi","Goclenius",
+            "Macrobius","Proclus","Daniel","Grove","Posidonius","Hercules","Eudoxus","Vitruvius","Calippus","Herschel",
+            "Pytheas","Timocharis","Mairan","Herodotus","Glushko","Reiner","Damoiseau","Byrgius",
+            "Vitello","Campanus","Drebbel","Triesnecker","Lalande","Mösting","Gambart","Lansberg"
         ];
 
 
@@ -952,11 +941,8 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
             pushFeatures(craters_small,'crater',8,"small-craters","Small Craters",()=>updateMoonTransform());
             pushFeatures(craters_tiny,'crater',16,"tiny-craters","Tiny Craters",()=>updateMoonTransform());
         
-          
+            pushFeatures(coordsFeatures(),'debug',16,"coords","Coords",()=>updateMoonTransform());
             
-
-
-//    coordsFeatures();
 
 addFeatureElements();
         }
