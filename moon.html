@@ -136,9 +136,19 @@
             cursor: grabbing;
         }
 
+        /* The class that makes the panel visible */
+        .is-open  .hideable{
+            display: none;
+        }
+        
+        #controls-overlay {
 
-        .controls-overlay {
-            position: absolute;
+ /* Hide off-screen */
+ transform: translateX(0);
+
+/* Animation */
+transition: transform 0.3s ease-in-out;
+           position: fixed;
             top: 0;
             left: 0;
             z-index: 10;
@@ -219,13 +229,42 @@
     </div>
 
 
+   
+
+        
     <!-- Controls overlay -->
-    <div class="controls-overlay">
+    <div id="controls-overlay" >
         <div class="text-left space-y-4">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-100">Moon Phase Viewer</h1>
+           
+              <!-- Pan and Zoom Controls -->
+              <div class="flex text-left items-center space-x-2 md:space-x-4">
+                <button id="pan-left"
+                    class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">←</button>
+                <button id="pan-up"
+                    class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">↑</button>
+                <button id="zoom-in"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors"><small>&#x1F50D;</small>+</button>
+                <button id="zoom-out"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors"><small>&#x1F50D;</small>-</button>
+                <button id="pan-down"
+                    class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">↓</button>
+                <button id="pan-right"
+                    class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">→</button>
+                <button id="toggle-button" class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors text-2xl">
+                        ☰
+                        </button>                    
+            </div>
+
+
+
+            <div class="hideable flex text-left items-center space-x-2 md:space-x-4">
+            <div class=" flex text-left items-center text-2xl md:text-3xl font-bold text-gray-100">Moon Phase Viewer</div>
+          
+            </div>
+
 
             <!-- Date input -->
-            <div class="flex text-left items-center space-x-2 md:space-x-4">
+            <div class="hideable flex text-left items-center space-x-2 md:space-x-4">
                 <button id="date-prev"
                     class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">&lt;</button>
 
@@ -241,28 +280,13 @@
             </div>
 
              <!-- Moon phase information -->
-             <div class="pt-2">
+             <div class="hideable pt-2">
                 <h2 id="phase-name" class="text-lg font-semibold text-indigo-400"></h2>
                 <p id="illumination" class="text-gray-300 text-sm"></p>
             </div>
 
 
-            <!-- Pan and Zoom Controls -->
-            <div class="flex text-left items-center space-x-2 md:space-x-4">
-                <button id="pan-left"
-                    class="text-right bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">←</button>
-                <button id="pan-up"
-                    class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">↑</button>
-                <button id="zoom-in"
-                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">+</button>
-                <button id="zoom-out"
-                    class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">-</button>
-                <button id="pan-down"
-                    class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">↓</button>
-                <button id="pan-right"
-                    class="bg-indigo-500/80 hover:bg-indigo-600 text-white font-bold rounded-full w-9 h-9 flex items-center justify-center text-xl transition-colors">→</button>
-            </div>
-
+          
             <!-- Flip and Rotation Controls -->
             <div class=" text-left mx-auto space-y-2">
                 <div class="flex text-left  space-x-4 text-sm">
@@ -290,7 +314,7 @@
                     <span id="rotationLabel"> <span>
                 </div>
 
-                <div id="adjustments" class=" text-left mx-auto space-y-2">
+                <div id="adjustments" class="hideable text-left mx-auto space-y-2 text-sm">
                     <!-- populated by javascript -->
                 </div>
             </div>
@@ -298,15 +322,15 @@
            
 
 
-            <div id="labels" class=" text-left mx-auto space-y-2">
+            <div id="labels" class="hideable text-left mx-auto space-y-2">
 
             </div>
 
-            <div class="flex  text-right space-x-2 text-sm">
-                Credits: 
-                Feature list &amp;&nbsp;
-                <a class="underline" href="https://en.wikipedia.org/wiki/File:FullMoon2010.jpg"> Moon image </a> 
-                &nbsp;from <a class="underline" href="https://en.wikipedia.org">Wikipedia</a>
+            <div class="hideable flex flex-col gap-0 text-left space-x-1 text-xs">
+               <p> Credits: </p>
+               <p>  Feature list and <a class="underline" href="https://en.wikipedia.org/wiki/File:FullMoon2010.jpg">Moon image </a> </p>
+               <p> <a class="underline" href="https://en.wikipedia.org">Wikipedia</a></p>
+               <p> Hosted on github.</p>
             </div>
         </div>
     </div>
@@ -345,8 +369,8 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
     checkedPair=checked?"checked":"";
     document.getElementById(parentid).insertAdjacentHTML('beforeend', `<label id="${id2use}-label" class="flex  text-left space-x-2 cursor-pointer">
                         <input type="checkbox" id="${id2use}"
-                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500" ${checkedPair}>
-                        <span>${label}</span>
+                            class="form-checkbox h-4 w-4 text-indigo-600 bg-gray-800 border-gray-600 rounded focus:ring-indigo-500 " ${checkedPair}>
+                        <span class="text-sm">${label}</span>
                     </label>`);
     const element=document.getElementById(id2use+"-label");
     element.addEventListener('click', (e) => {
@@ -388,7 +412,8 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
         const rotationSlider = document.getElementById('rotation-slider');
         const rotationLabel = document.getElementById('rotationLabel');
 
-
+        const toggleButton = document.getElementById('toggle-button');
+        const controlsOverlay = document.getElementById('controls-overlay');
        
         
         // Constants
@@ -418,7 +443,33 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
         var lastMouseX;
         var lastMouseY;
 
+        
       
+
+        toggleButton.addEventListener('click', () => {
+            // The logic is slightly different: we toggle the specific
+            // transform classes that show or hide the panel.
+            
+            // Toggle the 'is-open' class on the panel
+            controlsOverlay.classList.toggle('is-open');
+        });
+        
+
+        function changeZoomTo(newZoom){
+                if (newZoom <= minZoom) {
+                        currentZoom = minZoom;
+                        moonX = 0;
+                        moonY = 0;
+                    }
+                else    if (newZoom > maxZoom) {
+                        currentZoom = maxZoom;
+                        
+                    }
+                else {
+                    currentZoom=newZoom;
+                    updateMoonTransform();
+            }
+        }
        
         // display adjusting sliders only to debug picture
         // addSlider('adjustments','adjust-dLat','dLat',-45,45,dLat,(e)=>{dLat=Number(e.target.value);updateMoonTransform();});
@@ -448,26 +499,9 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
             panRightBtn.addEventListener('click', () => pan(panStep, 0));
             // zoom 
 
-            zoomInBtn.addEventListener('click', () => {
-                if (currentZoom < maxZoom) {
-                    currentZoom *= zoomStep;
-                    updateMoonTransform();
-                } else {
-                    currentZoom = maxZoom;
-                }
-            });
+            zoomInBtn.addEventListener('click', () => changeZoomTo(currentZoom * zoomStep));
 
-            zoomOutBtn.addEventListener('click', () => {
-                if (currentZoom > minZoom) {
-                    currentZoom /= zoomStep;
-                    if (currentZoom <= minZoom) {
-                        currentZoom = minZoom;
-                        moonX = 0;
-                        moonY = 0;
-                    }
-                    updateMoonTransform();
-                }
-            });
+            zoomOutBtn.addEventListener('click', () => changeZoomTo(currentZoom / zoomStep));
 
             // flip controls
             flipHorizontalCheckbox.addEventListener('change', (e) => {
@@ -975,9 +1009,10 @@ addFeatureElements();
 
 
 
+        if (window.innerWidth < 768) 
+            toggleButton.click();
 
-
-
+        
     </script>
 </body>
 
