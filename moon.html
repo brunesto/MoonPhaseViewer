@@ -342,7 +342,7 @@ transition: transform 0.3s ease-in-out;
     
     
     <script src="mares.js"></script>
-    
+    <script src="landings.js"></script>
             <script>
 /**
  * add a slider that displays its value
@@ -974,6 +974,7 @@ function addCheckBox(parentid,id2use,label,checked,onClickListener){
             pushFeatures(craters_medium,'crater',4,"medium-craters","Medium Craters",()=>updateMoonTransform());
             pushFeatures(craters_small,'crater',8,"small-craters","Small Craters",()=>updateMoonTransform());
             pushFeatures(craters_tiny,'crater',16,"tiny-craters","Tiny Craters",()=>updateMoonTransform());
+            pushFeatures(landings,'Apollo landings',0,"landings","Landings",()=>updateMoonTransform());
         
             pushFeatures(coordsFeatures(),'debug',16,"coords","Coords",()=>updateMoonTransform());
             
@@ -989,7 +990,10 @@ addFeatureElements();
                 var label=null
                 if (feature.link){
                     label = document.createElement('a');
-                    label.href = "https://en.wikipedia.org/"+feature.link;
+                    var link=feature.link;
+                    if (link[0]=="/")   
+                        link= "https://en.wikipedia.org/"+link;
+                    label.href=link;
                     label.target = '_blank';
                 } else {
                     label = document.createElement('div');
