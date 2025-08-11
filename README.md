@@ -1,6 +1,6 @@
 # Display the moon and its terminator.
 
-[moon.html](moon.html)
+[moon.html](https://brunesto.github.io/MoonPhaseViewer/moon.html)
 
 Night mode and axis-flipping options make it easier to identify features while looking at the moon thru a telescope.
 
